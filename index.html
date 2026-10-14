@@ -1,0 +1,1574 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Scholar Quest</title>
+<meta name="description" content="Track every scholarship, grant and accelerator application as a quest. Each step you clear is stamped on BOT Chain.">
+<meta name="theme-color" content="#1F00FF">
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='16' fill='%231F00FF'/%3E%3Cpath d='M32 10l6.5 14.5L54 26l-11.5 10.5L46 52l-14-8-14 8 3.5-15.5L10 26l15.5-1.5z' fill='%23F26B3A' stroke='%23fff' stroke-width='3' stroke-linejoin='round'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Archivo:wght@400;500;700;800&family=Kaushan+Script&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blue: #1F00FF;
+    --white: #FFFFFF;
+    --orange: #F26B3A;
+    --purple: #A855F7;
+    --amber: #F97316;
+    --dark: #1F1F1F;
+    --on-dark: #F5F5F5;
+    --ink: #111111;
+    --muted: #55556A;
+    --line: #D9D9E3;
+    --grad: linear-gradient(90deg, var(--purple), var(--amber));
+    --display: 'Anton', Impact, 'Arial Narrow', sans-serif;
+    --body: 'Archivo', system-ui, -apple-system, 'Segoe UI', sans-serif;
+    --script: 'Kaushan Script', 'Brush Script MT', cursive;
+    --r: 22px;
+  }
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; -webkit-text-size-adjust: 100%; }
+  body {
+    margin: 0;
+    min-height: 100vh;
+    color: var(--white);
+    font: 16px/1.55 var(--body);
+    -webkit-font-smoothing: antialiased;
+    overflow-x: hidden;
+    background-color: var(--blue);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='56' height='56'%3E%3Cpath d='M0 .5H56M.5 0V56' fill='none' stroke='%23fff' stroke-opacity='.13' stroke-width='1' stroke-dasharray='5 5'/%3E%3C/svg%3E");
+  }
+  @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } }
+  img, svg { max-width: 100%; }
+  a { color: inherit; }
+  [hidden] { display: none !important; }
+  :focus-visible { outline: 3px solid var(--amber); outline-offset: 3px; }
+  .wrap { width: min(1240px, 100% - 32px); margin-inline: auto; }
+  .sr { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+  .display { font-family: var(--display); font-weight: 400; text-transform: uppercase; letter-spacing: .01em; }
+  .kicker { display: inline-block; font: 800 12px/1 var(--body); letter-spacing: .18em; text-transform: uppercase; }
+
+  /* ---------- buttons ---------- */
+  .btn {
+    display: inline-flex; align-items: center; justify-content: center; gap: 8px;
+    min-height: 48px; padding: 0 22px; border-radius: 999px;
+    border: 3px solid var(--ink); background: var(--white); color: var(--ink);
+    font: 400 18px/1 var(--display); letter-spacing: .05em; text-transform: uppercase;
+    text-decoration: none; cursor: pointer; white-space: nowrap;
+    transition: transform .15s ease, box-shadow .15s ease, background .15s ease;
+  }
+  .btn:hover { transform: translate(-2px, -2px); box-shadow: 4px 4px 0 var(--ink); }
+  .btn:active { transform: none; box-shadow: none; }
+  .btn:disabled { opacity: .55; cursor: progress; transform: none; box-shadow: none; }
+  .btn.orange { background: var(--orange); }
+  .btn.dark { background: var(--dark); color: var(--on-dark); border-color: var(--dark); }
+  .btn.ghost { background: transparent; color: var(--white); border-color: var(--white); }
+  .btn.ghost:hover { box-shadow: 4px 4px 0 var(--white); }
+  .btn.big { min-height: 60px; padding: 0 30px; font-size: 22px; }
+  .btn.sm { min-height: 38px; padding: 0 14px; font-size: 15px; border-width: 2px; }
+  .btn.full { width: 100%; }
+  .row { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+
+  /* ---------- header ---------- */
+  .top { position: relative; z-index: 30; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 18px 0; }
+  .logo { display: inline-flex; align-items: center; gap: 8px; font: 400 clamp(26px, 6vw, 36px)/1 var(--script); color: var(--white); text-decoration: none; transform: rotate(-4deg); white-space: nowrap; }
+  .logo svg { width: .9em; height: .9em; transform: rotate(10deg); }
+  .top-box { display: flex; align-items: center; gap: 4px; background: var(--white); border-radius: 18px; padding: 6px; }
+  .top-box .btn { min-height: 44px; padding: 0 16px; font-size: 16px; border-width: 2px; }
+  .top-box .btn:hover { box-shadow: 3px 3px 0 var(--ink); }
+  .dot { width: 9px; height: 9px; border-radius: 50%; background: #18C46B; border: 2px solid var(--ink); }
+  .burger { width: 44px; height: 44px; border: 0; border-radius: 12px; background: transparent; display: grid; place-content: center; gap: 5px; cursor: pointer; }
+  .burger:hover { background: #EFEDFF; }
+  .burger i { display: block; width: 24px; height: 3px; border-radius: 2px; background: var(--ink); transition: transform .2s, opacity .2s; }
+  .burger[aria-expanded="true"] i:nth-child(1) { transform: translateY(8px) rotate(45deg); }
+  .burger[aria-expanded="true"] i:nth-child(2) { opacity: 0; }
+  .burger[aria-expanded="true"] i:nth-child(3) { transform: translateY(-8px) rotate(-45deg); }
+  .menu { position: absolute; right: 0; top: calc(100% - 4px); width: min(320px, 100%); background: var(--white); color: var(--ink); border-radius: 20px; padding: 10px; box-shadow: 0 18px 40px rgba(0, 0, 40, .35); display: none; }
+  .menu.open { display: block; }
+  .menu a { display: flex; justify-content: space-between; align-items: center; padding: 14px 14px; border-radius: 12px; text-decoration: none; font: 400 24px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .menu a:hover, .menu a[aria-current] { background: #EFEDFF; }
+  .menu a::after { content: '→'; font-family: var(--body); font-weight: 800; font-size: 18px; }
+  .menu small { display: block; padding: 10px 14px 4px; font: 700 11px/1.4 var(--body); letter-spacing: .14em; color: var(--muted); text-transform: uppercase; }
+
+  /* ---------- landing ---------- */
+  .hero { display: grid; gap: 28px; padding: 32px 0 56px; }
+  .mega { margin: 0; font: 400 clamp(58px, 15vw, 150px)/.86 var(--display); text-transform: uppercase; letter-spacing: .005em; }
+  .mega span { display: block; }
+  .mega .chip-in { display: inline-block; vertical-align: middle; margin-left: .12em; transform: rotate(-6deg) translateY(-.15em); font: 800 clamp(11px, 1.6vw, 14px)/1 var(--body); letter-spacing: .14em; padding: 9px 14px; border-radius: 999px; background: var(--grad); color: var(--ink); white-space: nowrap; }
+  .card { background: var(--white); color: var(--ink); border-radius: var(--r); }
+  .hero-card { position: relative; padding: 22px 22px 26px; display: grid; gap: 16px; }
+  .hero-card .doodle { display: grid; place-items: center; background: #F4F2FF; border-radius: 16px; padding: 8px; }
+  .hero-card .doodle svg { width: min(300px, 100%); height: auto; }
+  .lead { margin: 0; font-size: 18px; line-height: 1.5; color: #2A2A35; }
+  .hero-card .row .btn.ghost { color: var(--ink); border-color: var(--ink); }
+  .hero-card .row .btn.ghost:hover { box-shadow: 4px 4px 0 var(--ink); }
+  @media (min-width: 920px) {
+    .hero { grid-template-columns: 1.3fr .8fr; align-items: end; gap: 40px; padding: 56px 0 80px; }
+    .mega { font-size: clamp(60px, 9.4vw, 140px); }
+  }
+
+  .marquee { position: relative; z-index: 2; width: 106vw; margin: 0 -3vw; overflow: hidden; background: var(--white); color: var(--ink); border-block: 3px solid var(--ink); transform: rotate(-2deg); }
+  .marquee.flat { transform: none; width: auto; margin: 0; border: 0; }
+  .track { display: flex; width: max-content; animation: marquee 32s linear infinite; }
+  .track span { font: 400 clamp(26px, 4vw, 44px)/1.5 var(--display); text-transform: uppercase; letter-spacing: .03em; white-space: nowrap; padding-right: .6em; }
+  .track b { color: var(--orange); font-weight: 400; padding-right: .6em; }
+  @keyframes marquee { to { transform: translateX(-50%); } }
+  @media (prefers-reduced-motion: reduce) { .track { animation: none; } }
+
+  .section { padding: 96px 0 0; }
+  .sec-head { display: grid; gap: 14px; margin-bottom: 36px; max-width: 780px; }
+  .sec-head h2 { margin: 0; font-size: clamp(48px, 9vw, 104px); line-height: .9; }
+  .sec-head p { margin: 0; font-size: 18px; color: rgba(255, 255, 255, .86); max-width: 560px; }
+  .steps { list-style: none; padding: 0; margin: 0; display: grid; gap: 14px; }
+  .step { background: var(--white); color: var(--ink); border-radius: 20px; padding: 22px 24px 26px; display: grid; align-content: start; gap: 8px; min-height: 210px; position: relative; overflow: hidden; }
+  .step .num { font: 400 clamp(64px, 9vw, 96px)/.9 var(--display); color: var(--blue); }
+  .step h3 { margin: 4px 0 0; font: 400 30px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .step p { margin: 0; color: var(--muted); }
+  .step.final { background: var(--dark); color: var(--on-dark); }
+  .step.final .num { background: var(--grad); -webkit-background-clip: text; background-clip: text; color: transparent; }
+  .step.final p { color: #BDBDC8; }
+  @media (min-width: 700px) { .steps { grid-template-columns: repeat(2, 1fr); } }
+  @media (min-width: 1000px) { .steps { grid-template-columns: repeat(3, 1fr); } }
+
+  .stats { display: grid; grid-template-columns: repeat(2, 1fr); gap: 28px 16px; }
+  .stat { border-top: 3px solid currentColor; padding-top: 12px; }
+  .stat b { display: block; font: 400 clamp(76px, 15vw, 150px)/.88 var(--display); font-variant-numeric: tabular-nums; }
+  .stat span { display: block; margin-top: 8px; font: 800 12px/1.35 var(--body); letter-spacing: .16em; text-transform: uppercase; }
+  .stat span::before { content: '— '; }
+  .stat.hot b { color: var(--orange); }
+  @media (min-width: 900px) { .stats.four { grid-template-columns: repeat(4, 1fr); } }
+  .note-sm { margin: 18px 0 0; font: 700 11px/1.4 var(--body); letter-spacing: .14em; text-transform: uppercase; opacity: .7; }
+
+  .whys { display: grid; gap: 14px; }
+  .why { padding: 24px; display: grid; gap: 10px; align-content: start; }
+  .why svg { width: 96px; height: 96px; }
+  .why h3 { margin: 0; font: 400 32px/1 var(--display); text-transform: uppercase; }
+  .why p { margin: 0; color: var(--muted); }
+  @media (min-width: 900px) { .whys { grid-template-columns: repeat(3, 1fr); } }
+
+  .cta { margin-top: 96px; padding: clamp(28px, 6vw, 64px); display: grid; gap: 22px; text-align: center; justify-items: center; }
+  .cta h2 { margin: 0; font-size: clamp(44px, 8vw, 96px); line-height: .92; }
+  .cta p { margin: 0; color: var(--muted); max-width: 520px; font-size: 18px; }
+
+  /* ---------- app ---------- */
+  .app { padding: 24px 0 0; min-height: 60vh; }
+  .app-head { display: flex; flex-wrap: wrap; align-items: flex-end; justify-content: space-between; gap: 18px; margin-bottom: 28px; }
+  .app-head h1 { margin: 6px 0 10px; font: 400 clamp(52px, 10vw, 112px)/.88 var(--display); text-transform: uppercase; }
+  .meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; font: 700 12px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; }
+  .meta > * { padding: 8px 12px; border-radius: 999px; border: 2px solid rgba(255, 255, 255, .55); text-decoration: none; }
+  .meta .solid { background: var(--white); color: var(--ink); border-color: var(--white); }
+  .notice { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 18px; padding: 14px 18px; border-radius: 16px; background: rgba(255, 255, 255, .12); border: 2px dashed rgba(255, 255, 255, .5); font-size: 15px; }
+  .notice b { font-family: var(--display); font-weight: 400; letter-spacing: .05em; text-transform: uppercase; font-size: 17px; }
+  .notice.warn { background: var(--orange); color: var(--ink); border: 0; }
+  .board-stats { margin-bottom: 40px; }
+  @media (min-width: 700px) { .board-stats { grid-template-columns: repeat(3, 1fr); } }
+
+  .quests { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(360px, 100%), 1fr)); gap: 16px; align-items: start; }
+  .quest { background: var(--white); color: var(--ink); border-radius: 20px; padding: 20px; display: grid; gap: 14px; }
+  .quest.locked { background: #F4F4F7; }
+  .tags { display: flex; flex-wrap: wrap; gap: 6px; }
+  .tag { display: inline-flex; align-items: center; gap: 4px; font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; padding: 7px 10px; border-radius: 999px; border: 2px solid var(--ink); white-space: nowrap; }
+  .tag.k0 { background: #E6E2FF; }
+  .tag.k1 { background: #FFE2D6; }
+  .tag.k2 { background: #F0E1FF; }
+  .tag.soon { border-color: var(--orange); color: #B23F14; }
+  .tag.overdue { background: var(--orange); border-color: var(--orange); }
+  .tag.won { background: var(--grad); border-color: transparent; }
+  .tag.lost { background: var(--dark); border-color: var(--dark); color: var(--on-dark); }
+  .tag.plain { border-color: var(--line); color: var(--muted); }
+  .quest h3 { margin: 0; font: 400 clamp(28px, 4vw, 34px)/1 var(--display); text-transform: uppercase; overflow-wrap: anywhere; }
+  .q-meta { display: flex; flex-wrap: wrap; gap: 6px 16px; font: 700 12px/1.3 var(--body); letter-spacing: .1em; text-transform: uppercase; color: var(--muted); }
+  .q-meta a { color: var(--blue); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+  .stepper { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: repeat(5, 1fr) 44px; gap: 4px; }
+  .stepper li { height: 34px; border-radius: 9px; border: 2px solid var(--ink); display: grid; place-items: center; font: 400 15px/1 var(--display); letter-spacing: .04em; }
+  .stepper li.done { background: var(--blue); border-color: var(--blue); color: var(--white); }
+  .stepper li.now { background: var(--orange); }
+  .stepper li.end { border-style: dashed; font-size: 16px; }
+  .stepper li.end.won { background: var(--grad); border: 0; }
+  .stepper li.end.lost { background: var(--dark); border-color: var(--dark); color: var(--white); }
+  .now-line { display: flex; justify-content: space-between; gap: 10px; font: 400 20px/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .now-line span:last-child { color: var(--muted); font-size: 16px; }
+  .acts { display: flex; flex-wrap: wrap; gap: 8px; }
+  .acts .grow { flex: 1 1 auto; }
+  .q-err { margin: 0; padding: 10px 12px; border-radius: 12px; background: #FFE2D6; color: #8A2A08; font-size: 14px; font-weight: 600; }
+  .toggle { justify-self: start; background: none; border: 0; padding: 4px 0; font: 800 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; color: var(--ink); cursor: pointer; text-decoration: underline; text-decoration-thickness: 2px; text-underline-offset: 4px; }
+  .qlog { list-style: none; margin: 0; padding: 14px 0 0; border-top: 2px dashed var(--line); display: grid; gap: 0; }
+  .qlog li { position: relative; display: grid; grid-template-columns: 34px 1fr auto; gap: 10px; align-items: start; padding: 0 0 14px; }
+  .qlog li::before { content: ''; position: absolute; left: 16px; top: 30px; bottom: 0; border-left: 2px dashed var(--line); }
+  .qlog li:last-child { padding-bottom: 0; }
+  .qlog li:last-child::before { display: none; }
+  .qlog .n { width: 34px; height: 30px; border-radius: 8px; background: var(--blue); color: var(--white); display: grid; place-items: center; font: 400 15px/1 var(--display); }
+  .qlog .n.res { background: var(--grad); color: var(--ink); }
+  .qlog .n.res.lost { background: var(--dark); color: var(--white); }
+  .qlog b { display: block; font: 400 18px/1.1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .qlog time { font-size: 13px; color: var(--muted); }
+  .qlog a, .qlog .pending { font: 800 11px/1 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--blue); padding-top: 6px; }
+  .qlog .pending { color: var(--muted); }
+
+  .empty { background: var(--white); color: var(--ink); border-radius: 24px; padding: clamp(28px, 6vw, 56px) 24px; display: grid; justify-items: center; text-align: center; gap: 14px; }
+  .empty svg { width: min(240px, 70%); height: auto; }
+  .empty h2 { margin: 0; font: 400 clamp(40px, 7vw, 72px)/.92 var(--display); text-transform: uppercase; }
+  .empty p { margin: 0; color: var(--muted); max-width: 440px; }
+  .empty .row { justify-content: center; }
+  .loading { padding: 48px 0; text-align: center; font: 400 28px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; }
+  .loading i { display: inline-block; animation: blink 1s steps(2) infinite; }
+  @keyframes blink { 50% { opacity: 0; } }
+
+  /* ---------- floating chip + toast ---------- */
+  .fab { position: fixed; left: 50%; bottom: max(18px, env(safe-area-inset-bottom)); transform: translateX(-50%); z-index: 40; border: 0; border-radius: 999px; padding: 15px 24px; background: var(--grad); color: var(--ink); font: 400 18px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; cursor: pointer; white-space: nowrap; box-shadow: 0 12px 30px rgba(0, 0, 30, .4), inset 0 0 0 3px rgba(17, 17, 17, .9); transition: transform .15s; }
+  .fab:hover { transform: translateX(-50%) translateY(-3px) rotate(-2deg); }
+  .toast { position: fixed; left: 50%; bottom: calc(max(18px, env(safe-area-inset-bottom)) + 66px); transform: translateX(-50%); z-index: 60; width: max-content; max-width: calc(100% - 32px); background: var(--dark); color: var(--on-dark); border-radius: 16px; padding: 12px 18px; font-size: 15px; box-shadow: 0 12px 30px rgba(0, 0, 0, .4); }
+  .toast a { color: var(--amber); font-weight: 700; }
+
+  /* ---------- dialogs ---------- */
+  dialog { border: 3px solid var(--ink); border-radius: 24px; padding: 0; width: min(520px, 100% - 24px); max-height: calc(100dvh - 24px); color: var(--ink); background: var(--white); }
+  dialog::backdrop { background: rgba(14, 0, 90, .62); backdrop-filter: blur(2px); }
+  .dlg { padding: 22px; display: grid; gap: 16px; }
+  .dlg-head { display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+  .dlg h2 { margin: 0; font: 400 36px/1 var(--display); text-transform: uppercase; }
+  .x { width: 40px; height: 40px; border-radius: 50%; border: 2px solid var(--ink); background: var(--white); font-size: 18px; cursor: pointer; }
+  .field { display: grid; gap: 6px; margin: 0; padding: 0; border: 0; min-width: 0; }
+  .field > span, .field > legend { padding: 0; font: 800 12px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; }
+  .field em { font-style: normal; color: var(--muted); letter-spacing: .08em; }
+  .field input[type="text"], .field input[type="url"], .field input[type="date"] { width: 100%; min-height: 50px; padding: 0 14px; border-radius: 14px; border: 2px solid var(--ink); font: 500 16px var(--body); color: var(--ink); background: var(--white); }
+  .field input:focus { outline: 3px solid var(--purple); outline-offset: 1px; }
+  .kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; margin-top: 6px; }
+  .kinds label { position: relative; }
+  .kinds input { position: absolute; opacity: 0; inset: 0; }
+  .kinds span { display: grid; place-items: center; min-height: 46px; border-radius: 12px; border: 2px solid var(--ink); font: 400 15px/1 var(--display); letter-spacing: .05em; cursor: pointer; text-align: center; padding: 0 4px; }
+  .kinds input:checked + span { background: var(--blue); border-color: var(--blue); color: var(--white); }
+  .kinds input:focus-visible + span { outline: 3px solid var(--purple); outline-offset: 2px; }
+  .public-note { margin: 0; padding: 12px 14px; border-radius: 14px; background: #F4F2FF; font-size: 14px; color: #2A2A35; }
+  .err { margin: 0; padding: 12px 14px; border-radius: 14px; background: #FFE2D6; color: #8A2A08; font-size: 14px; font-weight: 600; }
+  .status { margin: 0; min-height: 1em; font: 800 12px/1.4 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .status:empty { display: none; }
+  .status a { color: var(--blue); }
+
+  /* ---------- demo film (scripted walkthrough, plays in the See a demo pop-up) ---------- */
+  #dlg-demo { width: min(920px, 100% - 24px); }
+  #dlg-demo .dlg { gap: 14px; }
+  .film { border: 3px solid var(--ink); border-radius: 18px; overflow: hidden; background: var(--blue); }
+  .film-top { display: flex; align-items: center; gap: 6px; padding: 9px 12px; background: var(--white); border-bottom: 3px solid var(--ink); }
+  .film-top i { width: 10px; height: 10px; border-radius: 50%; border: 2px solid var(--ink); }
+  .film-top i:nth-child(1) { background: var(--orange); }
+  .film-top i:nth-child(2) { background: var(--purple); }
+  .film-url { margin-left: 8px; flex: 1; min-width: 0; padding: 5px 12px; border-radius: 999px; background: #F1F0F7; font: 600 12px/1.2 var(--body); color: var(--muted); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .film-scene { position: relative; padding: 16px; display: grid; gap: 14px; min-height: 488px; overflow: hidden; color: var(--white);
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='40' height='40'%3E%3Cpath d='M0 .5H40M.5 0V40' fill='none' stroke='%23fff' stroke-opacity='.13' stroke-dasharray='4 4'/%3E%3C/svg%3E"); }
+  .film-scene > * { min-width: 0; }
+  .fm-head { display: flex; justify-content: space-between; align-items: flex-end; gap: 10px; }
+  .fm-kicker { display: block; font: 800 10px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; }
+  .fm-title { display: block; margin-top: 4px; font: 400 40px/.9 var(--display); text-transform: uppercase; }
+  .fm-head .tag { border-color: var(--white); }
+  .fm-stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+  .fm-stats div { border-top: 2px solid currentColor; padding-top: 6px; }
+  .fm-stats b { display: block; font: 400 44px/.9 var(--display); transition: color .3s; }
+  .fm-stats span { font: 800 9px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; }
+  .fm-stats b.hl { color: var(--amber); }
+  .fm-cols { position: relative; display: grid; grid-template-columns: 1.05fr 1fr; gap: 12px; align-items: start; }
+  .fm-main { position: relative; min-height: 236px; }
+  .fm-card, .fm-empty, .fm-panel, .fm-qlog { transition: opacity .25s, transform .25s; }
+  .fm-card { padding: 14px; gap: 10px; }
+  .fm-card h3 { font-size: 24px; }
+  .fm-card .stepper li { height: 28px; font-size: 13px; }
+  .fm-card .now-line { font-size: 16px; }
+  .fm-card .now-line span:last-child { font-size: 13px; }
+  .fm-card .btn, .fm-panel .btn { min-height: 40px; font-size: 15px; pointer-events: none; }
+  .fm-empty { position: absolute; inset: 0; display: grid; place-content: center; justify-items: center; gap: 6px; text-align: center; border: 2px dashed rgba(255, 255, 255, .55); border-radius: 20px; padding: 16px; font: 400 26px/1 var(--display); text-transform: uppercase; }
+  .fm-empty small { font: 600 12px/1.4 var(--body); text-transform: none; opacity: .8; }
+  .off { opacity: 0; transform: translateY(8px) scale(.98); pointer-events: none; }
+  .fm-side { position: relative; min-height: 236px; }
+  .fm-panel { background: var(--white); color: var(--ink); border: 3px solid var(--ink); border-radius: 18px; padding: 14px; display: grid; gap: 10px; }
+  .fm-panel h4 { margin: 0; font: 400 24px/1 var(--display); text-transform: uppercase; }
+  .fm-panel label { display: grid; gap: 4px; font: 800 10px/1 var(--body); letter-spacing: .14em; text-transform: uppercase; }
+  .fm-input { min-height: 38px; display: flex; align-items: center; padding: 0 10px; border: 2px solid var(--ink); border-radius: 10px; font: 500 14px var(--body); letter-spacing: 0; text-transform: none; }
+  .fm-input.focus { outline: 3px solid var(--purple); outline-offset: 1px; }
+  .fm-caret { display: inline-block; width: 2px; height: 16px; margin-left: 1px; background: var(--ink); }
+  .fm-kinds { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .fm-kinds span { display: grid; place-items: center; min-height: 30px; border: 2px solid var(--ink); border-radius: 8px; font: 400 12px/1 var(--display); letter-spacing: .04em; }
+  .fm-kinds span.on { background: var(--blue); border-color: var(--blue); color: var(--white); }
+  .fm-st { min-height: 12px; font: 800 10px/1.2 var(--body); letter-spacing: .12em; text-transform: uppercase; color: var(--muted); }
+  .fm-qlog { position: absolute; inset: 0 0 auto; background: var(--white); color: var(--ink); border-radius: 18px; padding: 14px; }
+  .fm-qlog .qlog { border: 0; padding: 0; }
+  .fm-qlog .qlog li { padding-bottom: 8px; grid-template-columns: 30px 1fr auto; }
+  .fm-qlog .qlog li::before { top: 26px; left: 14px; }
+  .fm-qlog .qlog .n { width: 30px; height: 26px; font-size: 13px; }
+  .fm-qlog .qlog b { font-size: 15px; }
+  .fm-qlog .qlog time { font-size: 11px; }
+  .fm-qlog li { transition: opacity .25s, transform .25s; }
+  .fm-qlog li.hide { opacity: 0; transform: translateX(-8px); }
+  .fm-qlog h4 { margin: 0 0 10px; font: 800 10px/1 var(--body); letter-spacing: .16em; text-transform: uppercase; color: var(--muted); }
+  .fm-fab { position: absolute; left: 50%; bottom: 14px; transform: translateX(-50%); padding: 11px 18px; border-radius: 999px; background: var(--grad); color: var(--ink); font: 400 15px/1 var(--display); letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; box-shadow: inset 0 0 0 3px var(--ink); transition: opacity .25s; }
+  .fm-toast { position: absolute; left: 50%; bottom: 62px; transform: translateX(-50%); padding: 9px 14px; border-radius: 12px; background: var(--dark); color: var(--on-dark); font: 600 12px/1.3 var(--body); white-space: nowrap; transition: opacity .25s; }
+  .fm-toast b { color: var(--amber); }
+  .fm-fab.off, .fm-toast.off { transform: translateX(-50%); }
+  .film .pressed { transform: scale(.94); filter: brightness(.92); }
+  .fm-fab.pressed { transform: translateX(-50%) scale(.94); }
+  .film-cursor { position: absolute; left: 0; top: 0; width: 26px; height: 26px; pointer-events: none; z-index: 5; filter: drop-shadow(0 3px 4px rgba(0, 0, 0, .45)); will-change: transform; }
+  .film-ctl { display: flex; align-items: center; gap: 12px; padding: 10px 12px; background: var(--white); color: var(--ink); border-top: 3px solid var(--ink); font: 700 12px/1 var(--body); }
+  .film-ctl button { flex: none; width: 36px; height: 36px; border-radius: 50%; border: 2px solid var(--ink); background: var(--orange); color: var(--ink); cursor: pointer; font-size: 12px; }
+  .film-ctl .cap { flex: 0 1 300px; min-width: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; font: 400 16px/1 var(--display); letter-spacing: .04em; text-transform: uppercase; }
+  .film-ctl .bar { flex: 1; min-width: 40px; height: 16px; display: flex; align-items: center; cursor: pointer; }
+  .film-ctl .bar i { display: block; width: 100%; height: 5px; border-radius: 3px; background: linear-gradient(90deg, var(--blue) var(--p, 0%), #DAD8E8 var(--p, 0%)); }
+  .film-ctl time { white-space: nowrap; color: var(--muted); font-variant-numeric: tabular-nums; }
+  @media (max-width: 680px) {
+    .film-scene { padding: 12px; min-height: 500px; }
+    .fm-title { font-size: 32px; }
+    .fm-stats b { font-size: 34px; }
+    .fm-cols { grid-template-columns: 1fr; }
+    .fm-side { position: absolute; inset: 0 0 auto; min-height: 0; z-index: 2; }
+    .film-ctl { gap: 8px; }
+    .film-ctl .cap { flex: 1 1 0; font-size: 14px; }
+    .film-ctl .bar { flex: 0 0 56px; }
+    .film-ctl time { display: none; }
+    .fm-qlog { padding: 12px; }
+    .fm-qlog .qlog li { padding-bottom: 6px; align-items: center; }
+    .fm-qlog .qlog li::before { display: none; }
+    .fm-qlog .qlog time { display: none; }
+  }
+
+  /* ---------- footer ---------- */
+  .foot { padding: 110px 0 104px; }
+  .foot-panel { background: var(--dark); color: var(--on-dark); border-radius: 28px; overflow: hidden; }
+  .foot-panel .marquee { background: var(--grad); color: var(--ink); }
+  .foot-panel .track span { font-size: clamp(22px, 3vw, 30px); }
+  .foot-panel .track b { color: var(--ink); }
+  .foot-cols { display: grid; gap: 36px; padding: clamp(28px, 5vw, 48px); }
+  .foot h4 { margin: 0 0 18px; font: 800 12px/1 var(--body); letter-spacing: .18em; color: #A3A3B2; text-transform: uppercase; }
+  .bot-card { position: relative; display: inline-flex; align-items: center; gap: 14px; background: var(--white); color: var(--ink); border-radius: 18px; padding: 16px 24px 16px 16px; text-decoration: none; transition: transform .2s ease; }
+  .bot-card:hover, .bot-card:focus-visible { transform: rotate(-3deg); }
+  .bot-card img { width: 56px; height: 56px; border-radius: 12px; display: block; }
+  .bot-card b { font: 400 30px/1 var(--display); letter-spacing: .03em; text-transform: uppercase; }
+  .bot-card small { display: block; font: 800 10px/1 var(--body); letter-spacing: .16em; color: var(--muted); margin-top: 4px; }
+  .bot-card .star { position: absolute; top: -20px; right: -18px; width: 50px; height: 50px; transform: rotate(14deg); }
+  .foot-explorer { gap: 10px; }
+  .addr { display: block; margin-top: 12px; font: 800 12px/1.3 var(--body); letter-spacing: .16em; text-transform: uppercase; color: #A3A3B2; font-variant: small-caps; }
+  .net { margin: 0; font: 400 clamp(30px, 4vw, 40px)/1 var(--display); text-transform: uppercase; letter-spacing: .03em; }
+  .net span { display: block; margin-top: 8px; color: var(--amber); }
+  .foot-bar { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 10px; margin-top: 12px; padding: 16px 24px; background: var(--dark); color: var(--on-dark); border-radius: 16px; font: 400 16px/1 var(--display); letter-spacing: .08em; text-transform: uppercase; }
+  .foot-bar button { background: none; border: 0; color: inherit; font: inherit; letter-spacing: inherit; text-transform: inherit; cursor: pointer; padding: 6px 0; }
+  .foot-bar button:hover { color: var(--amber); }
+  @media (min-width: 860px) { .foot-cols { grid-template-columns: 1.1fr 1.2fr .9fr; } }
+  @media (max-width: 859px) { .foot-explorer { width: 100%; } }
+  @media (max-width: 480px) {
+    .top { gap: 8px; }
+    .logo { font-size: 24px; }
+    .logo svg { display: none; }
+    .top-box { padding: 4px; border-radius: 16px; }
+    .top-box .btn { min-height: 40px; padding: 0 10px; font-size: 13px; gap: 6px; }
+    .burger { width: 38px; height: 40px; }
+    .fab { font-size: 16px; padding: 14px 20px; }
+  }
+  @media (max-width: 350px) {
+    .logo { font-size: 20px; }
+    .top-box .btn { font-size: 12px; padding: 0 8px; }
+  }
+</style>
+</head>
+<body>
+<div id="top"></div>
+
+<header class="wrap top">
+  <a class="logo" id="brand" href="./" aria-label="Scholar Quest home">
+    <svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 3l4.6 10.6L36 14.6l-8.7 7.6L30 34l-10-6-10 6 2.7-11.8L4 14.6l11.4-1z" fill="#F26B3A" stroke="#fff" stroke-width="3" stroke-linejoin="round"/></svg>
+    Scholar Quest
+  </a>
+  <div class="top-box">
+    <div id="wallet-slot"></div>
+    <button class="burger" id="menu-btn" type="button" aria-label="Menu" aria-expanded="false" aria-controls="nav"><i></i><i></i><i></i></button>
+  </div>
+  <nav class="menu" id="nav" aria-label="Main">
+    <a data-nav="board" href="#board">Quest board</a>
+    <a data-nav="how" href="#how">How it works</a>
+    <a data-nav="demo" href="?scholar=demo">Demo quest</a>
+    <a data-nav="public" href="#" hidden>My public profile</a>
+    <small id="nav-net"></small>
+  </nav>
+</header>
+
+<!-- ============================== LANDING ============================== -->
+<main id="view-landing">
+  <section class="wrap hero">
+    <h1 class="mega"><span>Every</span><span>Application.</span><span>One quest. <i class="chip-in">★ Stamped on BOT Chain</i></span></h1>
+    <div class="card hero-card">
+      <div class="doodle" data-doodle="student"></div>
+      <p class="lead">Track every scholarship, grant and accelerator application as a quest. Each step you clear is stamped on BOT Chain, building a public, verifiable record of your hustle.</p>
+      <div class="row">
+        <a class="btn orange big" href="#board" data-start>Start my quest</a>
+        <button class="btn ghost" type="button" data-film>▶ See a demo</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="marquee" aria-hidden="true"><div class="track" data-marquee="Apply boldly|Track everything|Prove your hustle|Stamp every step|Chase the yes"></div></div>
+
+  <section class="wrap section" id="how">
+    <div class="sec-head">
+      <span class="kicker">The quest path</span>
+      <h2 class="display">Five stamps<br>to a decision</h2>
+      <p>Every application moves forward through five stages. Each move is a transaction, so the block stamps the time. It only goes forward, and it can't be backdated.</p>
+    </div>
+    <ol class="steps">
+      <li class="step"><span class="num">01</span><h3>Drafting</h3><p>You found it. It's on the board and the deadline clock is running.</p></li>
+      <li class="step"><span class="num">02</span><h3>Submitted</h3><p>Sent. The timestamp shows you beat the deadline.</p></li>
+      <li class="step"><span class="num">03</span><h3>Shortlisted</h3><p>You made the cut, out of the pile and onto the list.</p></li>
+      <li class="step"><span class="num">04</span><h3>Interview</h3><p>Face to face. Show them who's behind the paper.</p></li>
+      <li class="step"><span class="num">05</span><h3>Decision</h3><p>The waiting room. Whatever happens next, the work is on record.</p></li>
+      <li class="step final"><span class="num">🏆 / ✕</span><h3>Won or not this time</h3><p>Lock the result. Wins and misses both count as proof you showed up.</p></li>
+    </ol>
+  </section>
+
+  <section class="wrap section">
+    <div class="sec-head">
+      <span class="kicker">Proof of hustle</span>
+      <h2 class="display">Numbers that<br>don't lie</h2>
+    </div>
+    <div class="stats four" id="landing-stats"></div>
+    <p class="note-sm">From the demo quest. Yours fills in as you stamp.</p>
+  </section>
+
+  <section class="wrap section">
+    <div class="whys">
+      <article class="card why"><div data-doodle="plane"></div><h3>Stamped by the block</h3><p>Each step gets the time of the block it landed in. Not your clock, not ours.</p></article>
+      <article class="card why"><div data-doodle="trophy"></div><h3>Forward only</h3><p>Stages can't go back and results lock for good, so your timeline stays honest.</p></article>
+      <article class="card why"><div data-doodle="star"></div><h3>Share the proof</h3><p>Send mentors or recruiters your public link. It opens read-only, no wallet needed.</p></article>
+    </div>
+  </section>
+
+  <section class="wrap">
+    <div class="card cta">
+      <span class="kicker" style="color:var(--blue)">Ready, set, apply</span>
+      <h2 class="display">Your next yes<br>starts here</h2>
+      <p>Add your first application in under a minute. Program names are public, so use ones you're happy to share.</p>
+      <div class="row" style="justify-content:center">
+        <a class="btn orange big" href="#board" data-start>Start my quest</a>
+        <button class="btn" type="button" data-film>▶ See a demo</button>
+      </div>
+    </div>
+  </section>
+</main>
+
+<!-- ============================== APP ============================== -->
+<main id="view-app" class="wrap app" hidden></main>
+
+<!-- ============================== FOOTER ============================== -->
+<footer class="wrap foot">
+  <div class="foot-panel">
+    <div class="marquee flat" aria-hidden="true"><div class="track" data-marquee="Built on BOT Chain|Built on BOT Chain|Built on BOT Chain|Built on BOT Chain"></div></div>
+    <div class="foot-cols">
+      <div>
+        <h4>Powered by</h4>
+        <a class="bot-card" href="https://botchain.ai" target="_blank" rel="noopener" aria-label="BOT Chain (opens botchain.ai in a new tab)">
+          <img src="images/bot-chain-black.png" alt="" width="56" height="56">
+          <span><b>BOT Chain</b><small>botchain.ai ↗</small></span>
+          <svg class="star" viewBox="0 0 60 60" aria-hidden="true"><path d="M30 4c2 7 4 13 7 17 5 1 12 2 18 4-5 4-10 8-13 12 1 6 3 13 3 19-6-3-11-6-15-8-5 2-10 5-16 8 1-6 2-12 4-18-4-5-9-9-13-13 6-2 12-3 18-4 3-5 5-11 7-17z" fill="#F97316" stroke="#111" stroke-width="3" stroke-linejoin="round"/><path d="M24 26c2-1 3 0 3 2M33 26c2-1 3 0 3 2M25 35c3 3 8 3 11 0" fill="none" stroke="#111" stroke-width="2.5" stroke-linecap="round"/></svg>
+        </a>
+      </div>
+      <div>
+        <h4>On-chain proof</h4>
+        <a class="btn orange big foot-explorer" id="foot-explorer" target="_blank" rel="noopener" href="https://scan.botchain.ai">View on explorer ↗</a>
+        <span class="addr" id="foot-addr"></span>
+      </div>
+      <div>
+        <h4>Network</h4>
+        <p class="net">BOT Chain<span>Chain ID 677</span></p>
+      </div>
+    </div>
+  </div>
+  <div class="foot-bar">
+    <span>© Scholar Quest 2026</span>
+    <button type="button" id="to-top">Back to top ↑</button>
+  </div>
+</footer>
+
+<button class="fab" id="fab" type="button">+ New application</button>
+<div class="toast" id="toast" role="status" aria-live="polite" hidden></div>
+
+<!-- ============================== DIALOGS ============================== -->
+<dialog id="dlg-add" aria-labelledby="add-title">
+  <form class="dlg" id="form-add" novalidate>
+    <div class="dlg-head"><h2 id="add-title">New application</h2><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <label class="field"><span>Program name</span><input type="text" id="add-program" maxlength="80" required autocomplete="off" placeholder="e.g. Demo Global Scholarship"></label>
+    <fieldset class="field">
+      <legend>Type</legend>
+      <div class="kinds">
+        <label><input type="radio" name="kind" value="0" checked><span>Scholarship</span></label>
+        <label><input type="radio" name="kind" value="1"><span>Grant</span></label>
+        <label><input type="radio" name="kind" value="2"><span>Accelerator</span></label>
+      </div>
+    </fieldset>
+    <label class="field"><span>Deadline</span><input type="date" id="add-deadline" required></label>
+    <label class="field"><span>Link <em>· optional · public</em></span><input type="url" id="add-link" maxlength="200" placeholder="https://" autocomplete="off"></label>
+    <p class="public-note">Everything here is public on BOT Chain. Only add program names and links you're happy for anyone to see.</p>
+    <p class="err" id="add-err" hidden></p>
+    <p class="status" id="add-status" aria-live="polite"></p>
+    <button class="btn orange big full" id="add-submit" type="submit">Add to my quest</button>
+  </form>
+</dialog>
+
+<dialog id="dlg-finish" aria-labelledby="fin-title">
+  <div class="dlg">
+    <div class="dlg-head"><h2 id="fin-title">Lock the result?</h2><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <p id="fin-text" style="margin:0"></p>
+    <div class="acts">
+      <button class="btn orange grow" id="fin-ok" type="button">Confirm</button>
+      <button class="btn" type="button" data-close>Cancel</button>
+    </div>
+  </div>
+</dialog>
+
+<dialog id="dlg-demo" aria-labelledby="demo-title">
+  <div class="dlg">
+    <div class="dlg-head"><h2 id="demo-title">One quest in 20 seconds</h2><button class="x" type="button" data-close aria-label="Close">✕</button></div>
+    <div class="film" id="film">
+      <div class="film-top" aria-hidden="true"><i></i><i></i><i></i><span class="film-url" id="fm-url">scholarquest · #board</span></div>
+      <div class="film-scene" id="film-scene" aria-hidden="true">
+        <div class="fm-head">
+          <div><span class="fm-kicker" id="fm-kicker">Quest board</span><b class="fm-title" id="fm-title">My quest</b></div>
+          <span class="btn sm ghost" id="fm-share">Share my quest</span>
+          <span class="tag" id="fm-ro" hidden>Read-only</span>
+        </div>
+        <div class="fm-stats"><div><b id="fm-n0">00</b><span>Applications</span></div><div><b id="fm-n1">00</b><span>In interview</span></div><div><b id="fm-n2">00</b><span>Won</span></div></div>
+        <div class="fm-cols">
+          <div class="fm-main">
+            <div class="fm-empty" id="fm-empty">Your quest starts here<small>Add the first application to begin.</small></div>
+            <article class="quest fm-card off" id="fm-card">
+              <div class="tags"><span class="tag k0">Scholarship</span><span class="tag plain" id="fm-tag">47 days left</span></div>
+              <h3>Demo Global Scholarship</h3>
+              <div class="q-meta"><span>Deadline 30 Nov 2026</span></div>
+              <ol class="stepper" id="fm-steps"><li>01</li><li>02</li><li>03</li><li>04</li><li>05</li><li class="end">★</li></ol>
+              <div class="now-line"><span id="fm-now">Now · 01 Drafting</span><span id="fm-of">1/5</span></div>
+              <div class="acts" id="fm-acts">
+                <span class="btn orange grow" id="fm-next">Next step → 02 Submitted</span>
+                <span class="btn orange grow" id="fm-won" hidden>Won 🏆</span>
+                <span class="btn dark grow" id="fm-lost" hidden>Not this time</span>
+              </div>
+              <span class="toggle" id="fm-log">Quest log ▾</span>
+            </article>
+          </div>
+          <div class="fm-side">
+            <div class="fm-panel off" id="fm-panel">
+              <h4>New application</h4>
+              <label>Program name<span class="fm-input" id="fm-name"><span id="fm-typed"></span><i class="fm-caret" id="fm-caret"></i></span></label>
+              <label>Type<span class="fm-kinds"><span class="on">Scholarship</span><span>Grant</span><span>Accelerator</span></span></label>
+              <label>Deadline<span class="fm-input">30 / 11 / 2026</span></label>
+              <span class="fm-st" id="fm-st"></span>
+              <span class="btn orange full" id="fm-go">Add to my quest</span>
+            </div>
+            <div class="fm-qlog off" id="fm-qlog">
+              <h4>Quest log · stamped on BOT Chain</h4>
+              <ol class="qlog" id="fm-rows"></ol>
+            </div>
+          </div>
+        </div>
+        <span class="fm-fab" id="fm-fab">+ New application</span>
+        <div class="fm-toast off" id="fm-toast"></div>
+        <svg class="film-cursor" id="film-cursor" viewBox="0 0 26 26"><path d="M4 2l17 9.5-7.5 2L10 21z" fill="#fff" stroke="#111" stroke-width="2" stroke-linejoin="round"/></svg>
+      </div>
+      <div class="film-ctl">
+        <button type="button" id="film-play" aria-label="Pause the walkthrough">❚❚</button>
+        <span class="cap" id="film-cap" aria-live="off"></span>
+        <span class="bar" id="film-bar" aria-hidden="true"><i></i></span>
+        <time id="film-time">0:00 / 0:20</time>
+      </div>
+    </div>
+    <p class="sr">A 20-second animated walkthrough: add an application, clear stages 01 to 05 with each step stamped on BOT Chain, lock the result as won, open the time-stamped quest log, then share a read-only public profile.</p>
+    <div class="row">
+      <a class="btn orange" href="#board" data-start>Start my quest</a>
+      <a class="btn" data-nav="demo" href="?scholar=demo">Explore the demo quest →</a>
+    </div>
+  </div>
+</dialog>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.5/ethers.umd.min.js" crossorigin="anonymous"></script>
+<script>
+(() => {
+  'use strict';
+
+  // ============================================================
+  // Config — the only values to edit after deploying.
+  // ============================================================
+  const CONFIG = {
+    networks: {
+      // `contract` is the single source for the app, the footer and the explorer link.
+      mainnet: { chainId: 677, name: 'BOT Chain', rpc: 'https://rpc.botchain.ai', explorer: 'https://scan.botchain.ai', contract: '', fromBlock: 0 },
+      testnet: { chainId: 968, name: 'BOT Chain Testnet', rpc: 'https://rpc.bohr.life', explorer: 'https://scan.bohr.life', contract: '', fromBlock: 0 },
+    },
+    // Wallet whose quest opens from "Demo quest". While empty, the demo shows built-in sample data.
+    demoScholar: '',
+  };
+
+  const KINDS = ['Scholarship', 'Grant', 'Accelerator'];
+  const STAGES = ['Drafting', 'Submitted', 'Shortlisted', 'Interview', 'Decision'];
+  const FINAL_STAGE = 5;
+
+  const ABI = [
+    'function addApplication(string program, string link, uint8 kind, uint64 deadline) returns (uint256 id)',
+    'function advance(uint256 id)',
+    'function finish(uint256 id, bool won)',
+    'function getApplications(address scholar) view returns (tuple(string program, string link, uint8 kind, uint64 deadline, uint8 stage, uint8 result, uint64 createdAt)[])',
+    'function getStageTimes(address scholar, uint256 id) view returns (uint64[6])',
+    'event ApplicationAdded(address indexed scholar, uint256 indexed id, string program, uint8 kind, uint64 deadline)',
+    'event StageAdvanced(address indexed scholar, uint256 indexed id, uint8 stage, uint64 at)',
+    'event ApplicationFinished(address indexed scholar, uint256 indexed id, bool won)',
+    'error EmptyProgram()', 'error TextTooLong()', 'error InvalidKind()', 'error NoDeadline()',
+    'error ApplicationNotFound()', 'error AlreadyFinished()', 'error AtFinalStage()', 'error NotAtDecision()',
+  ];
+  const REVERTS = {
+    EmptyProgram: 'Give the program a name.',
+    TextTooLong: 'The program name or link is too long.',
+    InvalidKind: 'Pick a type.',
+    NoDeadline: 'Pick a deadline.',
+    ApplicationNotFound: 'That application is not on your quest.',
+    AlreadyFinished: 'This application is already locked.',
+    AtFinalStage: 'Already at 05 · Decision. Set the result instead.',
+    NotAtDecision: 'A result can only be set at 05 · Decision.',
+  };
+
+  const params = new URLSearchParams(location.search);
+  const isLocal = ['localhost', '127.0.0.1', '[::1]'].includes(location.hostname);
+  const netKey = params.get('net') === 'testnet' ? 'testnet' : 'mainnet';
+  const NET = { ...CONFIG.networks[netKey] };
+  // On localhost, pick up an address deployed from deploy.html so it can be tried before editing CONFIG.
+  if (!NET.contract && isLocal) NET.contract = storage('sq.contract.' + NET.chainId) || '';
+  const MAINNET = { ...CONFIG.networks.mainnet };
+  if (!MAINNET.contract && isLocal) MAINNET.contract = storage('sq.contract.' + MAINNET.chainId) || '';
+  const PREVIEW = !NET.contract; // no contract yet: changes are simulated in this browser
+  const CHAIN_HEX = '0x' + NET.chainId.toString(16);
+  const PREVIEW_WALLET = '0x5C401A2000000000000000000000000000000B05';
+
+  const state = {
+    account: null, chainId: null, previewWallet: false,
+    data: null, loading: false, error: null, scholar: null, loadId: 0,
+    open: new Set(), busy: new Map(), errors: new Map(), hashes: {},
+  };
+  const shown = {}; // last value each counter displayed, so re-renders count from there
+  let reader = null;
+
+  // ============================================================
+  // Small helpers
+  // ============================================================
+  const $ = (id) => document.getElementById(id);
+  function h(tag, props = {}, ...children) {
+    const el = document.createElement(tag);
+    for (const [k, v] of Object.entries(props)) {
+      if (k === 'class') el.className = v;
+      else if (k.startsWith('on')) el.addEventListener(k.slice(2), v);
+      else if (v !== false && v != null) el.setAttribute(k, v === true ? '' : v);
+    }
+    el.append(...children.flat().filter((c) => c != null && c !== false));
+    return el;
+  }
+  function storage(key, value) {
+    try {
+      if (value === undefined) return localStorage.getItem(key);
+      localStorage.setItem(key, value);
+    } catch { /* storage unavailable */ }
+    return null;
+  }
+  const sleep = (ms) => new Promise((r) => setTimeout(r, ms));
+  const short = (a) => a.slice(0, 6) + '…' + a.slice(-4);
+  const pad = (n) => String(n).padStart(2, '0');
+  const same = (a, b) => !!a && !!b && a.toLowerCase() === b.toLowerCase();
+  const bytes = (s) => new TextEncoder().encode(s).length;
+  const extLink = (href, text, cls) => h('a', { href, target: '_blank', rel: 'noopener', class: cls }, text);
+  const safeLink = (s) => /^https?:\/\/[^\s]+$/i.test(s || '');
+  const reduceMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const DAY = 86400;
+
+  const MONTHS = ['JAN', 'FEB', 'MAR', 'APR', 'MAY', 'JUN', 'JUL', 'AUG', 'SEP', 'OCT', 'NOV', 'DEC'];
+  // Deadlines are stored as the last second of the chosen day in UTC, so show them in UTC.
+  function deadlineText(ts) {
+    const d = new Date(ts * 1000);
+    return `${pad(d.getUTCDate())} ${MONTHS[d.getUTCMonth()]} ${d.getUTCFullYear()}`;
+  }
+  function when(ts) {
+    const d = new Date(ts * 1000);
+    return `${pad(d.getDate())} ${MONTHS[d.getMonth()]} ${d.getFullYear()} · ${pad(d.getHours())}:${pad(d.getMinutes())}`;
+  }
+  // Whole days from today (local calendar) to the deadline day. Negative once it has passed.
+  function daysLeft(deadline) {
+    const n = new Date();
+    return Math.floor(deadline / DAY) - Math.floor(Date.UTC(n.getFullYear(), n.getMonth(), n.getDate()) / 1000 / DAY);
+  }
+
+  // Keeps ?net= when moving between views.
+  function url({ scholar, hash } = {}) {
+    const q = new URLSearchParams();
+    if (netKey !== 'mainnet') q.set('net', netKey);
+    if (scholar) q.set('scholar', scholar);
+    const qs = q.toString();
+    return location.pathname + (qs ? '?' + qs : '') + (hash ? '#' + hash : '');
+  }
+  let toastTimer;
+  function toast(...nodes) {
+    $('toast').replaceChildren(...nodes);
+    $('toast').hidden = false;
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => ($('toast').hidden = true), 6000);
+  }
+  function explain(e) {
+    if (e?.code === 4001 || e?.code === 'ACTION_REJECTED') return 'Rejected in MetaMask. Nothing was stamped.';
+    if (e?.revert?.name && REVERTS[e.revert.name]) return REVERTS[e.revert.name];
+    if (e?.code === 'INSUFFICIENT_FUNDS') return 'Not enough BOT in this wallet to pay the network fee.';
+    return e?.friendly || e?.shortMessage || e?.message || 'Something went wrong.';
+  }
+  const friendly = (message) => Object.assign(new Error(message), { friendly: message });
+
+  // ============================================================
+  // Doodles — hand-drawn style, black ink
+  // ============================================================
+  const INK = 'fill="none" stroke="#111" stroke-width="3.2" stroke-linecap="round" stroke-linejoin="round"';
+  const DOODLES = {
+    student: `<svg viewBox="0 0 260 240" role="img" aria-label="Doodle of a student walking with a backpack and an application">
+      <path d="M22 220c40-6 90-8 136-5 30 2 56 4 80 2" ${INK}/>
+      <path d="M200 40l4 9 10 1-7 7 2 10-9-5-9 5 2-10-7-7 10-1z" fill="#F97316" stroke="#111" stroke-width="2.6" stroke-linejoin="round"/>
+      <path d="M36 70l2 6 6 1-4 4 1 6-5-3-5 3 1-6-4-4 6-1z" ${INK}/>
+      <path d="M44 150c10-2 18-2 26 0M38 164c12-2 24-2 34 0" ${INK} stroke-dasharray="1 9"/>
+      <rect x="74" y="96" width="50" height="70" rx="16" fill="#F26B3A" stroke="#111" stroke-width="3.2"/>
+      <path d="M82 130c10-2 24-2 34 0v20c-10 3-24 3-34 0z" ${INK}/>
+      <path d="M99 130v8" ${INK}/>
+      <path d="M104 96c14-8 34-8 46 2l10 72c-22 8-44 8-62 0z" fill="#fff" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M112 98c4 14 4 30 0 46" ${INK}/>
+      <path d="M150 112c14 6 24 4 32-6" ${INK}/>
+      <g transform="rotate(12 196 86)"><rect x="180" y="62" width="34" height="44" rx="4" fill="#fff" stroke="#111" stroke-width="3.2"/><path d="M187 74h20M187 82h20M187 90h12" ${INK}/></g>
+      <path d="M182 104c4 0 8 2 8 6" ${INK}/>
+      <path d="M112 112c-6 18-4 34 4 44" ${INK}/>
+      <circle cx="130" cy="64" r="26" fill="#fff" stroke="#111" stroke-width="3.2"/>
+      <path d="M106 58c-2-22 16-34 34-30 16 4 22 18 18 30-8-10-20-12-30-8-8 3-14 6-22 8z" fill="#111"/>
+      <circle cx="132" cy="68" r="2.6" fill="#111"/><circle cx="147" cy="66" r="2.6" fill="#111"/>
+      <path d="M134 78c4 4 10 4 14-1" ${INK}/>
+      <path d="M118 168l-12 42h-16" ${INK}/>
+      <path d="M144 168l18 38 14-2" ${INK}/>
+      <path d="M86 212c-2-6 6-10 18-8M160 208c0-6 10-8 18-4" ${INK}/>
+      <path d="M58 110h-14M60 122h-22M56 134h-10" ${INK}/>
+    </svg>`,
+    plane: `<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path d="M14 58l92-40-30 86-16-30z" fill="#fff" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M60 74l46-56M60 74l-4 24 14-18" ${INK}/>
+      <path d="M12 96c10-8 20-10 30-6M8 82c6-4 12-5 18-4" ${INK} stroke-dasharray="2 8"/>
+      <path d="M98 88l2 5 5 1-4 3 1 5-4-3-4 3 1-5-4-3 5-1z" fill="#F97316" stroke="#111" stroke-width="2"/>
+    </svg>`,
+    trophy: `<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path d="M36 20h48c0 30-6 48-24 52-18-4-24-22-24-52z" fill="#F26B3A" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M36 28c-14-2-18 8-14 16 3 7 10 10 16 10M84 28c14-2 18 8 14 16-3 7-10 10-16 10" ${INK}/>
+      <path d="M60 72v16M44 100h32l-4-12H48z" ${INK}/>
+      <path d="M38 104h44" ${INK}/>
+      <path d="M60 32l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#fff" stroke="#111" stroke-width="2.4" stroke-linejoin="round"/>
+      <path d="M18 18l4 4M102 16l-4 5M104 60h6M10 62h6" ${INK}/>
+    </svg>`,
+    star: `<svg viewBox="0 0 120 120" aria-hidden="true">
+      <path d="M60 10c4 14 8 24 14 32 10 2 22 4 34 8-10 8-18 14-26 22 2 12 4 24 4 36-12-6-20-12-26-16-8 4-18 10-28 16 2-12 4-24 6-36-8-8-16-14-26-22 12-4 24-6 34-8 6-8 10-18 14-32z" fill="#A855F7" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M48 56c3-2 6 0 6 3M66 56c3-2 6 0 6 3M50 72c6 6 16 6 22 0" ${INK}/>
+    </svg>`,
+    map: `<svg viewBox="0 0 220 170" role="img" aria-label="Doodle of a treasure map with a flag">
+      <path d="M20 30l56-14 64 16 60-16v124l-60 16-64-16-56 14z" fill="#fff" stroke="#111" stroke-width="3.2" stroke-linejoin="round"/>
+      <path d="M76 16v124M140 32v124" ${INK} stroke-dasharray="3 7"/>
+      <path d="M40 120c18-4 22-30 46-30s26 26 50 18 20-38 34-44" ${INK} stroke-dasharray="7 9"/>
+      <path d="M168 64V28" ${INK}/><path d="M168 30l22 8-22 8z" fill="#F26B3A" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M32 114l12 12M44 114l-12 12" ${INK}/>
+    </svg>`,
+    compass: `<svg viewBox="0 0 200 170" role="img" aria-label="Doodle of a compass">
+      <circle cx="100" cy="86" r="62" fill="#fff" stroke="#111" stroke-width="3.2"/>
+      <circle cx="100" cy="86" r="50" ${INK} stroke-dasharray="2 8"/>
+      <path d="M100 42l12 44-12 44-12-44z" fill="#F26B3A" stroke="#111" stroke-width="3" stroke-linejoin="round"/>
+      <path d="M88 86h24" ${INK}/>
+      <path d="M100 14v10M30 86h10M160 86h10" ${INK}/>
+      <path d="M170 30l3 7 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1z" fill="#A855F7" stroke="#111" stroke-width="2.4"/>
+    </svg>`,
+  };
+  const doodle = (name) => { const d = h('div', {}); d.innerHTML = DOODLES[name]; return d.firstElementChild; };
+
+  // ============================================================
+  // Sample data — the landing stats, and the demo quest until CONFIG.demoScholar is set
+  // ============================================================
+  const SAMPLE = (() => {
+    const now = Math.floor(Date.now() / 1000);
+    const today = Math.floor(now / DAY) * DAY;
+    // [program, kind, deadline in days from today, stage, result, created days ago, link]
+    const rows = [
+      ['Northstar STEM Scholarship', 0, -40, 5, 1, 88, 'https://example.org/northstar'],
+      ['Launchpad Founders Accelerator', 2, -18, 4, 0, 52, ''],
+      ['Global Masters Fellowship', 0, -26, 4, 0, 70, 'https://example.org/fellowship'],
+      ['Open Ocean Research Grant', 1, -9, 4, 0, 41, ''],
+      ['Campus Climate Micro-Grant', 1, -3, 2, 0, 22, ''],
+      ['Builders in Web3 Grant', 1, 9, 1, 0, 6, 'https://example.org/web3-grant'],
+      ['Seed Sprint Accelerator', 2, -2, 1, 0, 15, ''],
+    ];
+    const apps = rows.map(([program, kind, due, stage, result, ago, link], id) => {
+      const createdAt = now - ago * DAY + id * 1371;
+      const steps = stage + (result ? 1 : 0);
+      const span = (ago - 2) * DAY;
+      const times = [0, 0, 0, 0, 0, 0];
+      for (let s = 0; s < stage; s++) times[s] = createdAt + Math.round((span * s) / steps);
+      if (result) times[5] = createdAt + span;
+      return { id, program, link, kind, deadline: today + due * DAY + DAY - 1, stage, result, createdAt, times };
+    });
+    return { apps, sample: true };
+  })();
+
+  // ============================================================
+  // Stores — where a quest is read from and written to
+  // ============================================================
+  const chainStore = {
+    reader() {
+      return (reader ||= new ethers.Contract(NET.contract, ABI, new ethers.JsonRpcProvider(NET.rpc, NET.chainId, { staticNetwork: true })));
+    },
+    async load(scholar) {
+      const c = this.reader();
+      const raw = await c.getApplications(scholar);
+      const apps = raw.map((a, id) => ({ id, program: a[0], link: a[1], kind: Number(a[2]), deadline: Number(a[3]), stage: Number(a[4]), result: Number(a[5]), createdAt: Number(a[6]) }));
+      await Promise.all(apps.map(async (a) => { a.times = [...(await c.getStageTimes(scholar, a.id))].map(Number); }));
+      return { apps };
+    },
+    // Transaction hashes aren't stored in the contract, so read them from the StageAdvanced / ApplicationFinished logs.
+    async txHashes(scholar, id) {
+      const c = this.reader();
+      const [moves, finishes] = await Promise.all([
+        c.queryFilter(c.filters.StageAdvanced(scholar, id), NET.fromBlock || 0),
+        c.queryFilter(c.filters.ApplicationFinished(scholar, id), NET.fromBlock || 0),
+      ]);
+      const out = [null, null, null, null, null, null];
+      for (const l of moves) out[Number(l.args.stage) - 1] = l.transactionHash;
+      for (const l of finishes) out[5] = l.transactionHash;
+      return out;
+    },
+    async writer() {
+      const eth = window.ethereum;
+      if (!eth) throw friendly('MetaMask was not found.');
+      if (!state.account) await connect();
+      if (!state.account) throw friendly('Connect your wallet first.');
+      if (state.chainId !== NET.chainId) await switchChain();
+      const signer = await new ethers.BrowserProvider(eth).getSigner(state.account);
+      return new ethers.Contract(NET.contract, ABI, signer);
+    },
+    // Estimate first (so reverts surface with a readable reason), then send with a little headroom.
+    async send(method, ...args) {
+      const c = await this.writer();
+      const gas = await c[method].estimateGas(...args);
+      return c[method](...args, { gasLimit: (gas * 13n) / 10n + 5000n });
+    },
+    addApplication(program, link, kind, deadline) { return this.send('addApplication', program, link, kind, deadline); },
+    advance(id) { return this.send('advance', id); },
+    finish(id, won) { return this.send('finish', id, won); },
+  };
+
+  // Mirrors the contract's rules in localStorage so every screen can be tried before deploying.
+  const previewStore = {
+    all() { try { return JSON.parse(storage('sq.preview') || '{}'); } catch { return {}; } },
+    async load(scholar) {
+      const apps = this.all()[scholar.toLowerCase()] || [];
+      return { apps: apps.map((a, id) => ({ ...a, id })) };
+    },
+    async txHashes() { return [null, null, null, null, null, null]; },
+    write(mutate) {
+      if (!state.account) throw friendly('Connect your wallet first.');
+      const all = this.all();
+      const apps = (all[state.account.toLowerCase()] ||= []);
+      mutate(apps, Math.floor(Date.now() / 1000));
+      storage('sq.preview', JSON.stringify(all));
+      return { hash: null, wait: () => sleep(1200) };
+    },
+    own(apps, id) {
+      const a = apps[id];
+      if (!a) throw friendly(REVERTS.ApplicationNotFound);
+      if (a.result) throw friendly(REVERTS.AlreadyFinished);
+      return a;
+    },
+    async addApplication(program, link, kind, deadline) {
+      return this.write((apps, at) => apps.push({ program, link, kind, deadline, stage: 1, result: 0, createdAt: at, times: [at, 0, 0, 0, 0, 0] }));
+    },
+    async advance(id) {
+      return this.write((apps, at) => {
+        const a = this.own(apps, id);
+        if (a.stage >= FINAL_STAGE) throw friendly(REVERTS.AtFinalStage);
+        a.stage += 1;
+        a.times[a.stage - 1] = at;
+      });
+    },
+    async finish(id, won) {
+      return this.write((apps, at) => {
+        const a = this.own(apps, id);
+        if (a.stage !== FINAL_STAGE) throw friendly(REVERTS.NotAtDecision);
+        a.result = won ? 1 : 2;
+        a.times[5] = at;
+      });
+    },
+  };
+  const store = PREVIEW ? previewStore : chainStore;
+
+  // ============================================================
+  // Wallet
+  // ============================================================
+  async function switchChain() {
+    const eth = window.ethereum;
+    try {
+      await eth.request({ method: 'wallet_switchEthereumChain', params: [{ chainId: CHAIN_HEX }] });
+    } catch (e) {
+      const unknownChain = e.code === 4902 || e?.data?.originalError?.code === 4902 || /unrecognized chain/i.test(e.message || '');
+      if (!unknownChain) throw e;
+      await eth.request({
+        method: 'wallet_addEthereumChain',
+        params: [{ chainId: CHAIN_HEX, chainName: NET.name, nativeCurrency: { name: 'BOT', symbol: 'BOT', decimals: 18 }, rpcUrls: [NET.rpc], blockExplorerUrls: [NET.explorer] }],
+      });
+    }
+    state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+    if (state.chainId !== NET.chainId) throw friendly(`MetaMask is not on ${NET.name}.`);
+    render();
+  }
+
+  async function connect() {
+    const eth = window.ethereum;
+    if (!eth) return;
+    try {
+      const [account] = await eth.request({ method: 'eth_requestAccounts' });
+      state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+      setAccount(account);
+      if (!PREVIEW && state.chainId !== NET.chainId) await switchChain();
+    } catch (e) {
+      if (e?.code !== 4001) toast(explain(e));
+    }
+    render();
+  }
+
+  function setAccount(account) {
+    const next = account ? ethers.getAddress(account) : null;
+    if (next === state.account && !state.previewWallet) return;
+    state.account = next;
+    state.previewWallet = false;
+    state.open.clear();
+    state.errors.clear();
+    if (view() === 'board') refresh();
+    else render();
+  }
+
+  async function initWallet() {
+    const eth = window.ethereum;
+    if (!eth) return;
+    eth.on?.('accountsChanged', ([account]) => setAccount(account));
+    eth.on?.('chainChanged', (id) => { state.chainId = Number(id); render(); });
+    try {
+      const [account] = await eth.request({ method: 'eth_accounts' });
+      state.chainId = Number(await eth.request({ method: 'eth_chainId' }));
+      if (account) state.account = ethers.getAddress(account);
+    } catch { /* stay disconnected */ }
+  }
+
+  const wrongNetwork = () => !PREVIEW && !state.previewWallet && !!state.account && state.chainId !== NET.chainId;
+  const switchNow = () => switchChain().catch((e) => toast(explain(e)));
+
+  function walletButton() {
+    if (state.account && wrongNetwork()) return h('button', { class: 'btn orange', type: 'button', onclick: switchNow }, 'Switch to BOT Chain');
+    if (state.account) return h('a', { class: 'btn', href: url({ hash: 'board' }), title: state.account }, h('span', { class: 'dot' }), short(state.account));
+    if (!window.ethereum) return extLink('https://metamask.io/download/', 'Install MetaMask ↗', 'btn orange');
+    return h('button', { class: 'btn orange', type: 'button', onclick: connect }, 'Connect wallet');
+  }
+
+  // ============================================================
+  // Routing
+  // ============================================================
+  const scholarParam = params.get('scholar');
+  function view() {
+    if (scholarParam != null) return 'public';
+    return location.hash === '#board' ? 'board' : 'landing';
+  }
+  // The scholar a view reads: null while there is nothing to read, 'sample' for the built-in demo.
+  function targetScholar() {
+    if (view() === 'board') return state.account;
+    if (view() !== 'public') return null;
+    if (scholarParam === 'demo') return !PREVIEW && ethers.isAddress(CONFIG.demoScholar) ? ethers.getAddress(CONFIG.demoScholar) : 'sample';
+    return ethers.isAddress(scholarParam) ? ethers.getAddress(scholarParam) : null;
+  }
+
+  async function refresh({ quiet } = {}) {
+    const scholar = targetScholar();
+    const id = ++state.loadId;
+    if (scholar !== state.scholar) { state.hashes = {}; state.open.clear(); }
+    state.scholar = scholar;
+    state.error = null;
+    if (!scholar) { state.data = null; state.loading = false; return render(); }
+    if (scholar === 'sample') { state.data = SAMPLE; state.loading = false; return render(); }
+    if (!quiet) { state.data = null; state.loading = true; render(); }
+    try {
+      const data = await store.load(scholar);
+      if (id !== state.loadId) return;
+      state.data = data;
+    } catch (e) {
+      if (id !== state.loadId) return;
+      console.error(e);
+      state.error = `Couldn't read from ${NET.name}. Check your connection and try again.`;
+    }
+    state.loading = false;
+    render();
+  }
+
+  // ============================================================
+  // Rendering
+  // ============================================================
+  function counter(key, value) {
+    return h('b', { 'data-count': key, 'data-to': value }, pad(shown[key] ?? 0));
+  }
+  function runCounters(root) {
+    root.querySelectorAll('[data-count]').forEach((el) => {
+      const key = el.dataset.count;
+      const to = Number(el.dataset.to);
+      const from = shown[key] ?? 0;
+      shown[key] = to;
+      if (from === to || reduceMotion()) { el.textContent = pad(to); return; }
+      const t0 = performance.now();
+      const dur = 900 + Math.min(Math.abs(to - from), 30) * 20;
+      const tick = (t) => {
+        const p = Math.min(1, (t - t0) / dur);
+        el.textContent = pad(Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))));
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    });
+  }
+  const stat = (key, value, label, hot) => h('div', { class: 'stat' + (hot ? ' hot' : '') }, counter(key, value), h('span', {}, label));
+  function tally(apps) {
+    return {
+      total: apps.length,
+      interview: apps.filter((a) => a.stage === 4 && !a.result).length,
+      won: apps.filter((a) => a.result === 1).length,
+      stamps: apps.reduce((n, a) => n + a.stage + (a.result ? 1 : 0), 0),
+    };
+  }
+
+  function statusTag(a) {
+    if (a.result === 1) return h('span', { class: 'tag won' }, 'Won 🏆');
+    if (a.result === 2) return h('span', { class: 'tag lost' }, 'Not this time');
+    if (a.stage > 1) return null; // submitted: the deadline no longer matters
+    const d = daysLeft(a.deadline);
+    if (d < 0) return h('span', { class: 'tag overdue' }, 'Overdue');
+    if (d === 0) return h('span', { class: 'tag soon' }, 'Due today');
+    return h('span', { class: 'tag' + (d <= 7 ? ' soon' : ' plain') }, `${d} day${d === 1 ? '' : 's'} left`);
+  }
+
+  function questCard(a, { editable }) {
+    const busy = state.busy.get(a.id);
+    const err = state.errors.get(a.id);
+    const open = state.open.has(a.id);
+    const locked = a.result !== 0;
+
+    const stepper = h('ol', { class: 'stepper', 'aria-label': locked ? `Finished: ${a.result === 1 ? 'won' : 'not this time'}` : `Stage ${a.stage} of 5, ${STAGES[a.stage - 1]}` },
+      STAGES.map((name, i) => h('li', { class: i + 1 < a.stage || (i + 1 === a.stage && locked) ? 'done' : i + 1 === a.stage ? 'now' : '', title: name }, pad(i + 1))),
+      h('li', { class: 'end' + (a.result === 1 ? ' won' : a.result === 2 ? ' lost' : ''), title: 'Result' }, a.result === 1 ? '🏆' : a.result === 2 ? '✕' : '★'));
+
+    let actions = null;
+    if (editable && !locked) {
+      const busyLabel = busy === 'confirm' ? (PREVIEW ? 'Stamping…' : 'Confirm in MetaMask…') : 'Stamping…';
+      if (a.stage < FINAL_STAGE) {
+        const next = `Next step → ${pad(a.stage + 1)} ${STAGES[a.stage]}`;
+        actions = h('div', { class: 'acts' }, h('button', { class: 'btn orange grow', type: 'button', disabled: !!busy, onclick: () => stampCard(a, () => store.advance(a.id), `Stamped ${pad(a.stage + 1)} · ${STAGES[a.stage]}.`) }, busy ? busyLabel : err ? 'Retry · ' + next : next));
+      } else {
+        actions = h('div', { class: 'acts' },
+          busy ? h('button', { class: 'btn orange grow', type: 'button', disabled: true }, busyLabel)
+            : [h('button', { class: 'btn orange grow', type: 'button', onclick: () => openFinish(a, true) }, 'Won 🏆'),
+              h('button', { class: 'btn dark grow', type: 'button', onclick: () => openFinish(a, false) }, 'Not this time')]);
+      }
+    }
+
+    return h('article', { class: 'quest' + (locked ? ' locked' : '') },
+      h('div', { class: 'tags' }, h('span', { class: 'tag k' + a.kind }, KINDS[a.kind] || 'Other'), statusTag(a)),
+      h('h3', {}, a.program),
+      h('div', { class: 'q-meta' },
+        h('span', {}, 'Deadline ' + deadlineText(a.deadline)),
+        safeLink(a.link) && extLink(a.link, 'Program page ↗')),
+      stepper,
+      h('div', { class: 'now-line' },
+        h('span', {}, locked ? (a.result === 1 ? 'Quest won' : 'Quest closed') : `Now · ${pad(a.stage)} ${STAGES[a.stage - 1]}`),
+        h('span', {}, locked ? 'Locked' : `${a.stage}/5`)),
+      actions,
+      err && h('p', { class: 'q-err', role: 'alert' }, err),
+      h('button', { class: 'toggle', type: 'button', 'aria-expanded': String(open), onclick: () => toggleLog(a) }, open ? 'Hide quest log ▴' : 'Quest log ▾'),
+      open && questLog(a));
+  }
+
+  function questLog(a) {
+    const hashes = state.hashes[a.id];
+    const txCell = (i) => {
+      if (state.scholar === 'sample') return h('span', { class: 'pending' }, 'demo');
+      if (PREVIEW) return h('span', { class: 'pending' }, 'preview');
+      if (hashes === undefined) return h('span', { class: 'pending' }, '…');
+      return hashes?.[i] ? extLink(`${NET.explorer}/tx/${hashes[i]}`, 'tx ↗') : h('span', {});
+    };
+    const rows = [];
+    for (let s = 1; s <= a.stage; s++) {
+      rows.push(h('li', {}, h('span', { class: 'n' }, pad(s)),
+        h('div', {}, h('b', {}, STAGES[s - 1]), a.times?.[s - 1] ? h('time', { datetime: new Date(a.times[s - 1] * 1000).toISOString() }, when(a.times[s - 1])) : h('time', {}, '—')),
+        txCell(s - 1)));
+    }
+    if (a.result) {
+      rows.push(h('li', {}, h('span', { class: 'n res' + (a.result === 2 ? ' lost' : '') }, a.result === 1 ? '🏆' : '✕'),
+        h('div', {}, h('b', {}, a.result === 1 ? 'Won' : 'Not this time'), a.times?.[5] ? h('time', {}, when(a.times[5])) : null),
+        txCell(5)));
+    }
+    return h('ol', { class: 'qlog', 'aria-label': 'Quest log' }, rows);
+  }
+
+  async function toggleLog(a) {
+    if (state.open.has(a.id)) state.open.delete(a.id);
+    else state.open.add(a.id);
+    render();
+    if (!state.open.has(a.id) || PREVIEW || state.scholar === 'sample' || a.id in state.hashes) return;
+    const scholar = state.scholar;
+    try {
+      const hashes = await chainStore.txHashes(scholar, a.id);
+      if (scholar === state.scholar) state.hashes[a.id] = hashes;
+    } catch (e) {
+      console.warn('Could not load tx links', e);
+      if (scholar === state.scholar) state.hashes[a.id] = null;
+    }
+    render();
+  }
+
+  function sortApps(apps) {
+    // Active quests first, nearest deadline first; finished ones after, newest result first.
+    return [...apps].sort((x, y) => (!!x.result - !!y.result) || (x.result ? y.times[5] - x.times[5] : x.deadline - y.deadline) || x.id - y.id);
+  }
+
+  const emptyEl = (art, title, text, ...actions) => h('div', { class: 'empty' }, art && doodle(art), h('h2', {}, title), text && h('p', {}, text), actions.length ? h('div', { class: 'row' }, actions) : null);
+
+  function copyPublicLink() {
+    const link = new URL(url({ scholar: state.account }), location.href).href;
+    navigator.clipboard?.writeText(link).then(() => toast('Public link copied. Anyone can open it, no wallet needed.'), () => toast(link));
+  }
+
+  function renderApp() {
+    const root = $('view-app');
+    const v = view();
+    const out = [];
+    const previewNote = PREVIEW && h('div', { class: 'notice' }, h('span', {}, h('b', {}, 'Preview mode'), ' · No contract address is set yet, so stamps are saved in this browser only.'));
+
+    if (v === 'board') {
+      const ready = state.account && !state.error && state.data;
+      out.push(h('div', { class: 'app-head' },
+        h('div', {}, h('span', { class: 'kicker' }, 'Quest board'), h('h1', {}, 'My quest'),
+          h('div', { class: 'meta' }, state.account
+            ? [h('span', { class: 'solid', title: state.account }, short(state.account)), h('span', {}, state.previewWallet ? 'Preview wallet' : NET.name)]
+            : h('span', {}, 'Not connected'))),
+        ready && state.data.apps.length > 0 && h('div', { class: 'row' },
+          !state.previewWallet && h('button', { class: 'btn ghost', type: 'button', onclick: copyPublicLink }, 'Share my quest'),
+          h('button', { class: 'btn orange', type: 'button', onclick: openAdd }, '+ Add application'))));
+      if (previewNote) out.push(previewNote);
+      if (wrongNetwork()) {
+        out.push(h('div', { class: 'notice warn' }, h('span', {}, h('b', {}, 'Wrong network'), ` · MetaMask is on another chain. Switch to ${NET.name} to stamp steps.`),
+          h('button', { class: 'btn sm', type: 'button', onclick: switchNow }, 'Switch to BOT Chain')));
+      }
+      if (!state.account) {
+        out.push(emptyEl('compass', window.ethereum ? 'Connect to start' : 'Get MetaMask first',
+          window.ethereum ? 'Connect your wallet to open your quest board. Public profiles and the demo work without one.' : 'You need the MetaMask browser extension to stamp your own quest.',
+          walletButton(),
+          PREVIEW && !window.ethereum && h('button', { class: 'btn', type: 'button', onclick: () => { state.account = PREVIEW_WALLET; state.previewWallet = true; refresh(); } }, 'Try with a preview wallet'),
+          h('a', { class: 'btn', href: url({ scholar: 'demo' }) }, 'See a demo')));
+      }
+    } else {
+      const s = state.scholar;
+      const isAddress = s && s !== 'sample';
+      out.push(h('div', { class: 'app-head' },
+        h('div', {}, h('span', { class: 'kicker' }, 'Public profile · read-only'),
+          h('h1', {}, scholarParam === 'demo' ? 'Demo quest' : 'Scholar quest'),
+          h('div', { class: 'meta' },
+            isAddress && extLink(`${NET.explorer}/address/${s}`, short(s) + ' ↗', 'solid'),
+            s === 'sample' && h('span', { class: 'solid' }, 'Sample data'),
+            h('span', {}, NET.name))),
+        isAddress && same(s, state.account) && h('a', { class: 'btn orange', href: url({ hash: 'board' }) }, 'Manage on my board')));
+      if (previewNote && s !== 'sample') out.push(previewNote);
+      if (s === 'sample') out.push(h('div', { class: 'notice' }, h('span', {}, h('b', {}, 'Sample data'), ' · A made-up quest that shows how a profile reads. Start your own to stamp real steps on BOT Chain.'), h('a', { class: 'btn sm', href: url({ hash: 'board' }) }, 'Start my quest')));
+    }
+
+    if (v === 'public' || state.account) {
+      if (state.loading) out.push(h('p', { class: 'loading' }, `Reading ${PREVIEW ? 'this browser' : NET.name}`, h('i', {}, '…')));
+      else if (state.error) out.push(emptyEl(null, 'Connection lost', state.error, h('button', { class: 'btn orange', type: 'button', onclick: () => refresh() }, 'Retry')));
+      else if (v === 'public' && (!state.data || !state.data.apps.length)) {
+        out.push(emptyEl('map', 'No quest found', state.scholar ? 'This wallet hasn’t added any applications yet.' : 'That link doesn’t contain a valid wallet address.',
+          h('a', { class: 'btn', href: url({ scholar: 'demo' }) }, 'See a demo'), h('a', { class: 'btn orange', href: url({ hash: 'board' }) }, 'Start my quest')));
+      } else if (state.data) {
+        const { apps } = state.data;
+        const t = tally(apps);
+        const key = v === 'board' ? 'b' : 'p';
+        out.push(h('div', { class: 'stats board-stats' },
+          stat(key + 'total', t.total, 'Applications'),
+          stat(key + 'int', t.interview, 'In interview'),
+          stat(key + 'won', t.won, 'Won', t.won > 0)));
+        if (!apps.length) {
+          out.push(emptyEl('student', 'Your quest starts here', 'Add the first scholarship, grant or accelerator you’re going for. It starts at 01 · Drafting.',
+            h('button', { class: 'btn orange big', type: 'button', onclick: openAdd }, 'Add first application')));
+        } else {
+          out.push(h('div', { class: 'quests' }, sortApps(apps).map((a) => questCard(a, { editable: v === 'board' && !wrongNetwork() }))));
+        }
+      }
+    }
+    root.replaceChildren(...out.filter(Boolean));
+    runCounters(root);
+  }
+
+  function render() {
+    const v = view();
+    $('view-landing').hidden = v !== 'landing';
+    $('view-app').hidden = v === 'landing';
+    $('wallet-slot').replaceChildren(walletButton());
+    // The board's own empty states carry the call to action, so the chip only shows once there is a board to add to.
+    $('fab').hidden = v === 'public' || (v === 'board' && (!state.account || wrongNetwork()));
+    document.querySelectorAll('[data-nav]').forEach((a) => {
+      const key = a.dataset.nav;
+      if (key === 'board') a.href = url({ hash: 'board' });
+      else if (key === 'how') a.href = url({ hash: 'how' });
+      else if (key === 'demo') a.href = url({ scholar: 'demo' });
+      else if (key === 'public') {
+        a.hidden = !state.account || state.previewWallet;
+        if (state.account) a.href = url({ scholar: state.account });
+      }
+      if (a.closest('.menu')) a.toggleAttribute('aria-current', (key === 'board' && v === 'board') || (key === 'demo' && scholarParam === 'demo'));
+    });
+    document.querySelectorAll('[data-start]').forEach((a) => (a.href = url({ hash: 'board' })));
+    $('brand').href = url();
+    if (v !== 'landing') renderApp();
+  }
+
+  function closeMenu() {
+    $('nav').classList.remove('open');
+    $('menu-btn').setAttribute('aria-expanded', 'false');
+  }
+
+  function route() {
+    closeMenu();
+    render();
+    if (view() === 'landing') {
+      const target = location.hash.length > 1 && document.getElementById(location.hash.slice(1));
+      if (target) target.scrollIntoView();
+    } else {
+      window.scrollTo(0, 0);
+      refresh();
+    }
+  }
+
+  // ============================================================
+  // Transactions
+  // ============================================================
+  async function stampCard(a, send, done) {
+    if (state.busy.has(a.id)) return;
+    state.busy.set(a.id, 'confirm');
+    state.errors.delete(a.id);
+    render();
+    try {
+      const tx = await send();
+      state.busy.set(a.id, 'mining');
+      render();
+      await tx.wait();
+      delete state.hashes[a.id];
+      toast(PREVIEW ? `${done} Saved in this browser (preview mode).` : `${done} On ${NET.name}.`, tx.hash ? ' ' : '', tx.hash ? extLink(`${NET.explorer}/tx/${tx.hash}`, 'View tx ↗') : '');
+      state.busy.delete(a.id);
+      await refresh({ quiet: true });
+    } catch (e) {
+      console.error(e);
+      state.errors.set(a.id, explain(e));
+    } finally {
+      state.busy.delete(a.id);
+      render();
+    }
+  }
+
+  // ---- Add application ----
+  function openAdd() {
+    if (!state.account) return newApplication();
+    $('form-add').reset();
+    $('add-err').hidden = true;
+    $('add-status').replaceChildren();
+    $('add-submit').textContent = 'Add to my quest';
+    $('add-submit').disabled = false;
+    const d = new Date(Date.now() + 30 * DAY * 1000);
+    $('add-deadline').value = `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
+    $('dlg-add').showModal();
+    $('add-program').focus();
+  }
+
+  $('form-add').addEventListener('submit', async (ev) => {
+    ev.preventDefault();
+    const dlg = $('dlg-add');
+    if (dlg.dataset.busy) return;
+    const program = $('add-program').value.trim();
+    const link = $('add-link').value.trim();
+    const kind = Number(new FormData($('form-add')).get('kind') ?? 0);
+    const day = $('add-deadline').value;
+    const fail = (msg, field) => { $('add-err').textContent = msg; $('add-err').hidden = false; field?.focus(); };
+    if (!program) return fail('Give the program a name.', $('add-program'));
+    if (bytes(program) > 80) return fail('Keep the program name under 80 characters.', $('add-program'));
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(day)) return fail('Pick a deadline.', $('add-deadline'));
+    if (link && !safeLink(link)) return fail('Links need to start with https:// (or http://).', $('add-link'));
+    if (bytes(link) > 200) return fail('Keep the link under 200 characters.', $('add-link'));
+    const [y, m, d] = day.split('-').map(Number);
+    const deadline = Date.UTC(y, m - 1, d, 23, 59, 59) / 1000;
+
+    const button = $('add-submit');
+    const status = $('add-status');
+    $('add-err').hidden = true;
+    dlg.dataset.busy = '1';
+    button.disabled = true;
+    button.textContent = 'Stamping…';
+    status.textContent = PREVIEW ? 'Saving in this browser…' : 'Confirm in MetaMask…';
+    try {
+      const tx = await store.addApplication(program, link, kind, deadline);
+      status.replaceChildren('Stamping on ' + (PREVIEW ? 'this browser' : NET.name) + '…', tx.hash ? ' · ' : '', tx.hash ? extLink(`${NET.explorer}/tx/${tx.hash}`, 'tx ↗') : '');
+      await tx.wait();
+      delete dlg.dataset.busy;
+      dlg.close();
+      toast(PREVIEW ? 'Added at 01 · Drafting. Saved in this browser (preview mode).' : `Added at 01 · Drafting. Stamped on ${NET.name}.`, tx.hash ? ' ' : '', tx.hash ? extLink(`${NET.explorer}/tx/${tx.hash}`, 'View tx ↗') : '');
+      await refresh({ quiet: true });
+    } catch (e) {
+      console.error(e);
+      status.replaceChildren();
+      fail(explain(e));
+      button.textContent = 'Retry';
+    } finally {
+      delete dlg.dataset.busy;
+      button.disabled = false;
+    }
+  });
+
+  // ---- Final result ----
+  let finishing = null;
+  function openFinish(a, won) {
+    finishing = { a, won };
+    $('fin-title').textContent = won ? 'Lock it as won?' : 'Lock as not this time?';
+    $('fin-text').textContent = `“${a.program}” will be marked ${won ? 'WON 🏆' : 'NOT THIS TIME'} and locked for good. This can’t be changed later.`;
+    $('fin-ok').textContent = won ? 'Yes, I won 🏆' : 'Yes, lock it';
+    $('dlg-finish').showModal();
+  }
+  $('fin-ok').addEventListener('click', () => {
+    if (!finishing) return;
+    const { a, won } = finishing;
+    finishing = null;
+    $('dlg-finish').close();
+    stampCard(a, () => store.finish(a.id, won), won ? 'Quest won 🏆' : 'Result locked.');
+  });
+
+  document.querySelectorAll('dialog').forEach((dlg) => {
+    dlg.addEventListener('cancel', (e) => { if (dlg.dataset.busy) e.preventDefault(); });
+    dlg.addEventListener('click', (e) => { if (e.target === dlg && !dlg.dataset.busy) dlg.close(); });
+    dlg.querySelectorAll('[data-close]').forEach((b) => b.addEventListener('click', () => { if (!dlg.dataset.busy) dlg.close(); }));
+  });
+
+  // ---- Floating chip ----
+  async function newApplication() {
+    if (view() !== 'board') {
+      history.pushState(null, '', url({ hash: 'board' }));
+      route();
+    }
+    if (!state.account) {
+      if (!window.ethereum) return;
+      await connect();
+      if (!state.account) return;
+    }
+    if (wrongNetwork()) return switchNow();
+    openAdd();
+  }
+
+  // ============================================================
+  // Landing + footer decoration
+  // ============================================================
+  // ============================================================
+  // Demo film — a scripted 20-second walkthrough drawn from one clock, so it can pause and seek.
+  // ============================================================
+  function film() {
+    const T = 20;
+    const scene = $('film-scene');
+    const st = { t: 0, playing: false, last: 0 };
+    const between = (a, b) => st.t >= a && st.t < b;
+    const NAME = 'Demo Global Scholarship';
+    const NEXT_CLICKS = [6.0, 7.4, 8.8, 10.2]; // each stamp lands 0.5s after its click
+    const LOG = [['01', 'Drafting', '02 SEP 2026 · 09:12'], ['02', 'Submitted', '15 SEP 2026 · 21:40'], ['03', 'Shortlisted', '03 OCT 2026 · 10:05'], ['04', 'Interview', '10 OCT 2026 · 14:30'], ['05', 'Decision', '18 OCT 2026 · 16:02']];
+    $('fm-rows').replaceChildren(
+      ...LOG.map(([n, name, at]) => h('li', {}, h('span', { class: 'n' }, n), h('div', {}, h('b', {}, name), h('time', {}, at)), h('span', { class: 'pending', style: 'color:var(--blue)' }, 'tx ↗'))),
+      h('li', {}, h('span', { class: 'n res' }, '🏆'), h('div', {}, h('b', {}, 'Won'), h('time', {}, '30 OCT 2026 · 11:47')), h('span', { class: 'pending', style: 'color:var(--blue)' }, 'tx ↗')));
+    // [time, element the cursor rests on, x fraction, y fraction]
+    const path = [[0, null], [1.0, 'fm-fab'], [1.4, 'fm-fab'], [1.8, 'fm-name'], [3.0, 'fm-name'], [3.5, 'fm-go'], [4.9, 'fm-go'], [5.7, 'fm-acts'], [10.6, 'fm-acts'], [11.4, 'fm-acts', 0.25], [12.5, 'fm-acts', 0.25], [13.2, 'fm-log'], [15.1, 'fm-log'], [15.7, 'fm-share'], [16.5, 'fm-share'], [T, null]];
+    const clicks = [[1.05, 1.3], [3.55, 3.8], ...NEXT_CLICKS.map((c) => [c, c + 0.25]), [11.6, 11.85], [13.25, 13.5], [15.8, 16.05]];
+    const point = (id, fx = 0.5, fy = 0.5) => {
+      const box = scene.getBoundingClientRect();
+      if (!id) return [box.width * 0.86, box.height * 0.82];
+      const r = $(id).getBoundingClientRect();
+      return [r.left - box.left + r.width * fx, r.top - box.top + r.height * fy];
+    };
+    const toastAt = () => between(4.95, 6.0) ? ['Added at 01 · Drafting. ', h('b', {}, 'View tx ↗')]
+      : between(12.2, 13.2) ? ['Quest won 🏆 On BOT Chain. ', h('b', {}, 'View tx ↗')]
+      : between(16.05, 17.4) ? ['Public link copied. No wallet needed to view.'] : null;
+
+    function draw() {
+      const t = st.t;
+      let i = path.findIndex(([at]) => at > t);
+      if (i < 1) i = path.length - 1;
+      const [t0, from, fx0, fy0] = path[i - 1];
+      const [t1, to, fx1, fy1] = path[i];
+      const k = Math.min(1, (t - t0) / (t1 - t0));
+      const ease = k * k * (3 - 2 * k);
+      const [x0, y0] = point(from, fx0, fy0);
+      const [x1, y1] = point(to, fx1, fy1);
+      const click = clicks.some(([a, b]) => between(a, b - 0.05));
+      $('film-cursor').style.transform = `translate(${x0 + (x1 - x0) * ease - 4}px, ${y0 + (y1 - y0) * ease - 3}px) scale(${click ? 0.82 : 1})`;
+
+      const added = t >= 4.95;
+      const stage = 1 + NEXT_CLICKS.filter((c) => t >= c + 0.5).length;
+      const won = t >= 12.2;
+      const pub = t >= 16.6;
+      const stamping = NEXT_CLICKS.some((c) => between(c, c + 0.5));
+
+      // header + url: the board, then the shared read-only profile
+      $('fm-url').textContent = pub ? 'scholarquest · ?scholar=0x5C40…0B05' : 'scholarquest · #board';
+      $('fm-kicker').textContent = pub ? 'Public profile · read-only' : 'Quest board';
+      $('fm-title').textContent = pub ? 'Scholar quest' : 'My quest';
+      $('fm-share').hidden = pub;
+      $('fm-ro').hidden = !pub;
+      $('fm-share').classList.toggle('pressed', between(15.8, 16.1));
+      $('fm-fab').classList.toggle('off', !(t < 1.35 || between(4.95, 13.4)));
+      $('fm-fab').classList.toggle('pressed', between(1.05, 1.35));
+
+      // stats
+      const stats = [added ? 1 : 0, added && stage === 4 && !won ? 1 : 0, won ? 1 : 0];
+      stats.forEach((n, j) => { $('fm-n' + j).textContent = pad(n); });
+      $('fm-n0').classList.toggle('hl', between(4.95, 6.0));
+      $('fm-n1').classList.toggle('hl', stats[1] === 1);
+      $('fm-n2').classList.toggle('hl', won);
+
+      // add panel
+      $('fm-panel').classList.toggle('off', !between(1.35, 4.95));
+      $('fm-name').classList.toggle('focus', between(1.7, 3.3));
+      $('fm-typed').textContent = NAME.slice(0, Math.max(0, Math.min(NAME.length, Math.round(((t - 1.7) / 1.3) * NAME.length))));
+      $('fm-caret').style.visibility = between(1.7, 3.3) && Math.floor(t * 3) % 2 === 0 ? 'visible' : 'hidden';
+      $('fm-go').classList.toggle('pressed', between(3.55, 3.85));
+      $('fm-go').textContent = between(3.6, 4.95) ? 'Stamping…' : 'Add to my quest';
+      $('fm-st').textContent = between(3.6, 4.2) ? 'Confirm in MetaMask…' : between(4.2, 4.95) ? 'Stamping on BOT Chain…' : '';
+
+      // the quest card
+      $('fm-empty').classList.toggle('off', added);
+      $('fm-card').classList.toggle('off', !added);
+      $('fm-card').classList.toggle('locked', won);
+      [...$('fm-steps').children].forEach((li, j) => {
+        if (j === 5) {
+          li.className = 'end' + (won ? ' won' : '');
+          li.textContent = won ? '🏆' : '★';
+        } else li.className = j + 1 < stage || (j + 1 === stage && won) ? 'done' : j + 1 === stage ? 'now' : '';
+      });
+      $('fm-tag').className = 'tag ' + (won ? 'won' : 'plain');
+      $('fm-tag').textContent = won ? 'Won 🏆' : '47 days left';
+      $('fm-tag').hidden = !won && stage > 1;
+      $('fm-now').textContent = won ? 'Quest won' : `Now · ${pad(stage)} ${STAGES[stage - 1]}`;
+      $('fm-of').textContent = won ? 'Locked' : `${stage}/5`;
+      $('fm-acts').hidden = won || pub;
+      $('fm-next').hidden = stage >= 5;
+      $('fm-next').textContent = stamping ? 'Stamping…' : `Next step → ${pad(stage + 1)} ${STAGES[stage] || ''}`;
+      $('fm-next').classList.toggle('pressed', NEXT_CLICKS.some((c) => between(c, c + 0.3)));
+      $('fm-won').hidden = stage < 5;
+      $('fm-lost').hidden = stage < 5 || between(11.6, 12.2);
+      $('fm-won').textContent = between(11.6, 12.2) ? 'Stamping…' : 'Won 🏆';
+      $('fm-won').classList.toggle('pressed', between(11.6, 11.9));
+
+      // quest log
+      const open = t >= 13.4;
+      $('fm-log').textContent = open ? 'Hide quest log ▴' : 'Quest log ▾';
+      $('fm-log').classList.toggle('pressed', between(13.25, 13.55));
+      $('fm-qlog').classList.toggle('off', !open);
+      [...$('fm-rows').children].forEach((li, j) => li.classList.toggle('hide', t < 13.5 + j * 0.28));
+
+      const toastNodes = toastAt();
+      $('fm-toast').classList.toggle('off', !toastNodes);
+      if (toastNodes) $('fm-toast').replaceChildren(...toastNodes);
+
+      $('film-cap').textContent = t < 4.95 ? '1 · Add an application' : t < 11.4 ? '2 · Stamp each stage' : t < 13.2 ? '3 · Lock the result' : t < 15.6 ? '4 · Every step timestamped' : '5 · Share your profile';
+      $('film-bar').style.setProperty('--p', `${(t / T) * 100}%`);
+      $('film-time').textContent = `0:${pad(Math.floor(t))} / 0:${T}`;
+    }
+    function tick(now) {
+      if (!st.playing) return;
+      st.t = (st.t + Math.min(0.1, (now - st.last) / 1000)) % T;
+      st.last = now;
+      draw();
+      requestAnimationFrame(tick);
+    }
+    function setPlaying(on) {
+      st.playing = on;
+      $('film-play').textContent = on ? '❚❚' : '▶';
+      $('film-play').setAttribute('aria-label', on ? 'Pause the walkthrough' : 'Play the walkthrough');
+      if (on) { st.last = performance.now(); requestAnimationFrame(tick); }
+    }
+    $('film-play').addEventListener('click', () => setPlaying(!st.playing));
+    $('film-bar').addEventListener('click', (ev) => {
+      const r = $('film-bar').getBoundingClientRect();
+      st.t = Math.max(0, Math.min(T - 0.01, ((ev.clientX - r.left) / r.width) * T));
+      draw();
+    });
+    window.addEventListener('resize', () => { if ($('dlg-demo').open) draw(); });
+    $('dlg-demo').addEventListener('close', () => setPlaying(false));
+    // With reduced motion, open on the finished quest and let the viewer press play.
+    return function open() {
+      closeMenu();
+      $('dlg-demo').showModal();
+      st.t = reduceMotion() ? 14.5 : 0;
+      draw();
+      setPlaying(!reduceMotion());
+    };
+  }
+
+  function decorate() {
+    document.querySelectorAll('[data-doodle]').forEach((el) => el.replaceChildren(doodle(el.dataset.doodle)));
+
+    document.querySelectorAll('[data-marquee]').forEach((track) => {
+      const words = track.dataset.marquee.split('|');
+      const run = () => words.flatMap((w) => [h('span', {}, w), h('b', {}, '★')]);
+      // Two identical halves so the -50% loop is seamless.
+      track.replaceChildren(...run(), ...run(), ...run(), ...run());
+    });
+
+    const t = tally(SAMPLE.apps);
+    const stats = $('landing-stats');
+    stats.replaceChildren(
+      stat('ltotal', t.total, 'Applications on the quest'),
+      stat('lint', t.interview, 'Interviews landed'),
+      stat('lwon', t.won, 'Quest won', true),
+      stat('lstamps', t.stamps, 'Steps stamped'));
+    if ('IntersectionObserver' in window) {
+      const io = new IntersectionObserver((entries) => {
+        if (entries.some((e) => e.isIntersecting)) { runCounters(stats); io.disconnect(); }
+      }, { threshold: 0.4 });
+      io.observe(stats);
+    } else runCounters(stats);
+
+    // Footer: always points at the mainnet contract from CONFIG.
+    if (MAINNET.contract) {
+      $('foot-explorer').href = `${MAINNET.explorer}/address/${MAINNET.contract}`;
+      $('foot-addr').textContent = short(MAINNET.contract);
+      $('foot-addr').title = MAINNET.contract;
+    } else {
+      $('foot-explorer').href = MAINNET.explorer;
+      $('foot-addr').textContent = 'Contract address coming soon';
+    }
+    $('nav-net').textContent = `${NET.name} · chain ID ${NET.chainId}` + (PREVIEW ? ' · preview mode' : '');
+  }
+
+  // ============================================================
+  // Wire up
+  // ============================================================
+  $('menu-btn').addEventListener('click', () => {
+    const open = !$('nav').classList.contains('open');
+    $('nav').classList.toggle('open', open);
+    $('menu-btn').setAttribute('aria-expanded', String(open));
+  });
+  document.addEventListener('click', (e) => { if (!e.target.closest('.top')) closeMenu(); });
+  document.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
+  $('nav').addEventListener('click', (e) => { if (e.target.closest('a')) closeMenu(); });
+  $('fab').addEventListener('click', newApplication);
+  const openFilm = film();
+  document.querySelectorAll('[data-film]').forEach((b) => b.addEventListener('click', openFilm));
+  $('to-top').addEventListener('click', () => window.scrollTo({ top: 0, behavior: reduceMotion() ? 'auto' : 'smooth' }));
+  window.addEventListener('hashchange', route);
+  window.addEventListener('popstate', route);
+
+  decorate();
+  initWallet().finally(route);
+})();
+</script>
+</body>
+</html>

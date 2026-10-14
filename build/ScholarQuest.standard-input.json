@@ -1,0 +1,23 @@
+{
+  "language": "Solidity",
+  "sources": {
+    "contracts/ScholarQuest.sol": {
+      "content": "// SPDX-License-Identifier: MIT\npragma solidity ^0.8.20;\n\n/// @title Scholar Quest\n/// @notice Tracks scholarship, grant and accelerator applications as quests.\n///         Each wallet owns its applications. Stages only move forward and\n///         every step is stamped with the block time, so the history can't be\n///         backdated. No tokens, payments or admin.\ncontract ScholarQuest {\n    /// @dev kind: 0 Scholarship, 1 Grant, 2 Accelerator\n    ///      stage: 1 Drafting, 2 Submitted, 3 Shortlisted, 4 Interview, 5 Decision\n    ///      result: 0 Pending, 1 Won, 2 Not this time\n    struct Application {\n        string program;\n        string link;\n        uint8 kind;\n        uint64 deadline;\n        uint8 stage;\n        uint8 result;\n        uint64 createdAt;\n    }\n\n    uint8 public constant MAX_KIND = 2;\n    uint8 public constant FINAL_STAGE = 5;\n    uint256 public constant MAX_PROGRAM_LENGTH = 80;\n    uint256 public constant MAX_LINK_LENGTH = 200;\n\n    mapping(address => Application[]) private apps;\n    /// @dev stageTimes[scholar][id][stage - 1] for stages 1-5, [5] when the result was set\n    mapping(address => mapping(uint256 => uint64[6])) private stageTimes;\n\n    event ApplicationAdded(address indexed scholar, uint256 indexed id, string program, uint8 kind, uint64 deadline);\n    event StageAdvanced(address indexed scholar, uint256 indexed id, uint8 stage, uint64 at);\n    event ApplicationFinished(address indexed scholar, uint256 indexed id, bool won);\n\n    error EmptyProgram();\n    error TextTooLong();\n    error InvalidKind();\n    error NoDeadline();\n    error ApplicationNotFound();\n    error AlreadyFinished();\n    error AtFinalStage();\n    error NotAtDecision();\n\n    /// @notice Add an application to the caller's quest. It starts at stage 1 (Drafting).\n    function addApplication(string calldata program, string calldata link, uint8 kind, uint64 deadline) external returns (uint256 id) {\n        if (bytes(program).length == 0) revert EmptyProgram();\n        if (bytes(program).length > MAX_PROGRAM_LENGTH || bytes(link).length > MAX_LINK_LENGTH) revert TextTooLong();\n        if (kind > MAX_KIND) revert InvalidKind();\n        if (deadline == 0) revert NoDeadline();\n\n        uint64 at = uint64(block.timestamp);\n        id = apps[msg.sender].length;\n        apps[msg.sender].push(Application(program, link, kind, deadline, 1, 0, at));\n        stageTimes[msg.sender][id][0] = at;\n\n        emit ApplicationAdded(msg.sender, id, program, kind, deadline);\n        emit StageAdvanced(msg.sender, id, 1, at);\n    }\n\n    /// @notice Move one of the caller's own applications to the next stage.\n    function advance(uint256 id) external {\n        Application storage app = _own(id);\n        if (app.result != 0) revert AlreadyFinished();\n        if (app.stage >= FINAL_STAGE) revert AtFinalStage();\n\n        uint64 at = uint64(block.timestamp);\n        uint8 stage = app.stage + 1;\n        app.stage = stage;\n        stageTimes[msg.sender][id][stage - 1] = at;\n\n        emit StageAdvanced(msg.sender, id, stage, at);\n    }\n\n    /// @notice Set the final result. Only possible at stage 5, and it locks the application.\n    function finish(uint256 id, bool won) external {\n        Application storage app = _own(id);\n        if (app.result != 0) revert AlreadyFinished();\n        if (app.stage != FINAL_STAGE) revert NotAtDecision();\n\n        app.result = won ? 1 : 2;\n        stageTimes[msg.sender][id][5] = uint64(block.timestamp);\n\n        emit ApplicationFinished(msg.sender, id, won);\n    }\n\n    function getApplications(address scholar) external view returns (Application[] memory) {\n        return apps[scholar];\n    }\n\n    function getStageTimes(address scholar, uint256 id) external view returns (uint64[6] memory) {\n        return stageTimes[scholar][id];\n    }\n\n    function _own(uint256 id) private view returns (Application storage) {\n        if (id >= apps[msg.sender].length) revert ApplicationNotFound();\n        return apps[msg.sender][id];\n    }\n}\n"
+    }
+  },
+  "settings": {
+    "optimizer": {
+      "enabled": true,
+      "runs": 200
+    },
+    "evmVersion": "paris",
+    "outputSelection": {
+      "*": {
+        "*": [
+          "abi",
+          "evm.bytecode.object"
+        ]
+      }
+    }
+  }
+}

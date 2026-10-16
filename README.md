@@ -8,7 +8,7 @@ Track every scholarship, grant and accelerator application as a quest. Each step
 
 | | |
 |---|---|
-| Live site | https://lallinanoi99-dev.github.io/Scholar-Quest/ |
+| Live site | https://scholarquest.my.id/ |
 | Contract (BOT Chain mainnet, chain ID 677) | [`0xB3D7295B802D056828b88FCaA9AF2167E96D3e27`](https://scan.botchain.ai/address/0xB3D7295B802D056828b88FCaA9AF2167E96D3e27) |
 | Contract (testnet, chain ID 968) | _not deployed yet_ |
 
